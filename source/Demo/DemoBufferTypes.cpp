@@ -7,11 +7,12 @@
  */
 
 #include "DemoBufferTypes.hpp"
-
 #include "CS200/NDC.hpp"
 #include "CS200/Renderer2DUtils.hpp"
 #include "CS200/RenderingAPI.hpp"
+#include "DemoMyModel.hpp"
 #include "Engine/Engine.hpp"
+#include "Engine/GameStateManager.hpp"
 #include "Engine/Random.hpp"
 #include "Engine/Window.hpp"
 #include "OpenGL/Buffer.hpp"
@@ -132,16 +133,12 @@ void DemoBufferTypes::DrawImGui()
             regenerate_all_villagers();
         }
 
-        // TODO uncomment when you have your own demo
-        // Replace STUDENTDEMO with the name of your demo
-        /*
         ImGui::Separator();
         if (ImGui::Button("Switch to STUDENTDEMO Demo"))
         {
             Engine::GetGameStateManager().PopState();
-            Engine::GetGameStateManager().PushState<STUDENTDEMO>();
+            Engine::GetGameStateManager().PushState<DemoMyModel>();
         }
-        */
     }
     ImGui::End();
 }
