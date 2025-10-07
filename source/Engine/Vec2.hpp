@@ -51,8 +51,8 @@ namespace Math
         int x{ 0 };
         int y{ 0 };
 
-        ivec2() = default;
-        ivec2(int x_, int y_) : x(x_), y(y_) { };
+        constexpr ivec2() = default;
+        constexpr ivec2(int x_, int y_) : x(x_), y(y_) { };
 
         explicit operator vec2()
         {
