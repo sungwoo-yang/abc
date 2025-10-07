@@ -1,7 +1,7 @@
 ﻿/**
  * \file
  * \author Rudy Castan
- * \author Sungwoo Yang
+ * \author TODO Your Name
  * \date 2025 Fall
  * \par CS200 Computer Graphics I
  * \copyright DigiPen Institute of Technology
@@ -70,7 +70,7 @@ namespace CS200
          * - Use stb_image library functions to load the image data
          * - Always load as 4-channel RGBA regardless of source format
          * - Set stbi_set_flip_vertically_on_load() before loading
-         * - Throw an error if loa0ding fails
+         * - Throw an error if loading fails
          * - Store the loaded pixel data and image dimensions
          */
         explicit Image(const std::filesystem::path& image_path, bool flip_vertical = false);
@@ -149,8 +149,7 @@ namespace CS200
         Math::ivec2 GetSize() const noexcept;
 
     private:
-        RGBA*       pixels = nullptr;
-        Math::ivec2 size   = { 0, 0 };
+        // TODO: Add private member variables to store image data and dimensions
     };
 
 }
