@@ -201,6 +201,10 @@ namespace CS200
 
 
     private:
-        // TODO: Add private member variables for OpenGL handles and resources
+        OpenGL::CompiledShader     shader{};
+        OpenGL::VertexArrayHandle  vertex_array_object{};
+        OpenGL::BufferHandle       vertex_buffer_object{};
+        OpenGL::BufferHandle       element_buffer_object{};
+        Math::TransformationMatrix viewProjectionMatrix{};
     };
 }

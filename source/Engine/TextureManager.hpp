@@ -125,6 +125,6 @@ namespace CS230
         void Unload();
 
     private:
-         // TODO Add private member variables as needed
+        std::map<std::filesystem::path, std::unique_ptr<Texture>> textureCache;
     };
 }
