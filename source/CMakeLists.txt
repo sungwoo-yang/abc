@@ -7,14 +7,17 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 set(SOURCE_CODE 
 
+    CS200/Image.hpp CS200/Image.cpp
     CS200/ImGuiHelper.hpp CS200/ImGuiHelper.cpp
+    CS200/ImmediateRenderer2D.hpp CS200/ImmediateRenderer2D.cpp
+    CS200/IRenderer2D.hpp
     CS200/NDC.hpp
     CS200/Renderer2DUtils.hpp CS200/Renderer2DUtils.cpp
     CS200/RenderingAPI.hpp CS200/RenderingAPI.cpp
     CS200/RGBA.hpp
 
-    Demo/DemoBufferTypes.hpp Demo/DemoBufferTypes.cpp
-    Demo/DemoMyModel.hpp Demo/DemoMyModel.cpp
+    Demo/DemoTexturing.hpp Demo/DemoTexturing.cpp
+    Demo/DemoCS230Textures.hpp Demo/DemoCS230Textures.cpp
 
     Engine/Engine.hpp Engine/Engine.cpp
     Engine/Error.hpp
@@ -26,6 +29,8 @@ set(SOURCE_CODE
     Engine/Matrix.hpp Engine/Matrix.cpp
     Engine/Path.hpp Engine/Path.cpp
     Engine/Random.hpp Engine/Random.cpp
+    Engine/Texture.hpp Engine/Texture.cpp
+    Engine/TextureManager.hpp Engine/TextureManager.cpp
     Engine/Timer.hpp
     Engine/Vec2.hpp Engine/Vec2.cpp
     Engine/Window.hpp Engine/Window.cpp
@@ -37,6 +42,7 @@ set(SOURCE_CODE
     OpenGL/GLTypes.hpp
     OpenGL/Handle.hpp
     OpenGL/Shader.cpp OpenGL/Shader.hpp
+    OpenGL/Texture.hpp OpenGL/Texture.cpp
     OpenGL/VertexArray.cpp OpenGL/VertexArray.hpp
 
     main.cpp

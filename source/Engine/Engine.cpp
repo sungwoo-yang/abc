@@ -8,14 +8,18 @@
  */
 #include "Engine.hpp"
 #include "CS200/ImGuiHelper.hpp"
+#include "CS200/ImmediateRenderer2D.hpp"
+#include "CS200/NDC.hpp"
 #include "CS200/RenderingAPI.hpp"
 #include "FPS.hpp"
 #include "GameState.hpp"
 #include "GameStateManager.hpp"
 #include "Input.hpp"
 #include "Logger.hpp"
+#include "TextureManager.hpp"
 #include "Timer.hpp"
 #include "Window.hpp"
+
 #include <chrono>
 
 // Pimpl implementation class
@@ -34,14 +38,16 @@ public:
     {
     }
 
-    CS230::Logger           logger;
-    CS230::Window           window{};
-    CS230::Input            input{};
-    ImGuiHelper::Viewport   viewport{};
-    util::FPS               fps{};
-    util::Timer             timer{};
-    WindowEnvironment       environment{};
-    CS230::GameStateManager gameStateManager{};
+    CS230::Logger              logger;
+    CS230::Window              window{};
+    CS230::Input               input{};
+    ImGuiHelper::Viewport      viewport{};
+    util::FPS                  fps{};
+    util::Timer                timer{};
+    WindowEnvironment          environment{};
+    CS230::GameStateManager    gameStateManager{};
+    CS200::ImmediateRenderer2D renderer2D{};
+    CS230::TextureManager      textureManager{};
 };
 
 Engine& Engine::Instance()
@@ -75,6 +81,16 @@ CS230::GameStateManager& Engine::GetGameStateManager()
     return Instance().impl->gameStateManager;
 }
 
+CS200::IRenderer2D& Engine::GetRenderer2D()
+{
+    return Instance().impl->renderer2D;
+}
+
+CS230::TextureManager& Engine::GetTextureManager()
+{
+    return Instance().impl->textureManager;
+}
+
 void Engine::Start(std::string_view window_title)
 {
     impl->logger.LogEvent("Engine Started");
@@ -90,12 +106,13 @@ void Engine::Start(std::string_view window_title)
     impl->environment.DisplaySize = { static_cast<double>(window_size.x), static_cast<double>(window_size.y) };
     ImGuiHelper::Initialize(window.GetSDLWindow(), window.GetGLContext());
     window.SetEventCallback(ImGuiHelper::FeedEvent);
-
+    impl->renderer2D.Init();
     impl->timer.ResetTimeStamp();
 }
 
 void Engine::Stop()
 {
+    impl->renderer2D.Shutdown();
     impl->gameStateManager.Clear();
     ImGuiHelper::Shutdown();
     impl->logger.LogEvent("Engine Stopped");
@@ -108,8 +125,9 @@ void Engine::Update()
     impl->input.Update();
     auto& state_manager = impl->gameStateManager;
     state_manager.Update();
-    const auto viewport = impl->viewport;
-    CS200::RenderingAPI::SetViewport({ viewport.width, viewport.height }, { viewport.x, viewport.y });
+    const auto        viewport      = impl->viewport;
+    const Math::ivec2 viewport_size = { viewport.width, viewport.height };
+    CS200::RenderingAPI::SetViewport(viewport_size, { viewport.x, viewport.y });
     state_manager.Draw();
     impl->viewport = ImGuiHelper::Begin();
     state_manager.DrawImGui();
