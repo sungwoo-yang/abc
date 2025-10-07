@@ -233,6 +233,7 @@ namespace CS230
 
 
     private:
-        // TODO: Add private member variables as needed
+        OpenGL::TextureHandle textureHandle = 0;
+        Math::ivec2           size{ 0, 0 };
     };
 }

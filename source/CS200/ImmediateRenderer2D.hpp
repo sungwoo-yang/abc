@@ -201,6 +201,7 @@ namespace CS200
 
 
     private:
-        // TODO: Add private member variables for OpenGL handles and resources
+        struct Impl;
+        std::unique_ptr<Impl> pImpl;
     };
 }
