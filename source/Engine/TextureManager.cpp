@@ -20,21 +20,23 @@ namespace CS230
 {
     Texture* TextureManager::Load(const std::filesystem::path& file_name)
     {
-        if (textures.find(file_name) != textures.end())
+        auto it = textures.find(file_name);
+        if (it != textures.end())
         {
-            return textures[file_name].get();
+            return it->second.get();
         }
 
         try
         {
-            auto texture = std::make_unique<Texture>(file_name);
-            textures[file_name] = std::move(texture);
+            auto     texture = std::unique_ptr<Texture>(new Texture(file_name));
+            Texture* ptr     = texture.get();
+            textures.emplace(file_name, std::move(texture));
             Engine::GetLogger().LogEvent("Loaded texture: " + file_name.string());
-            return textures[file_name].get();
+            return ptr;
         }
         catch (const std::exception& e)
         {
-            Engine::GetLogger().LogError("Failed to load texture: " + file_name.string() + " - " + e.what());
+            Engine::GetLogger().LogError("Failed to load texture: " + file_name.string());
             return nullptr;
         }
     }
