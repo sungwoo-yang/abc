@@ -70,8 +70,8 @@ namespace CS230
     {
         const Math::vec2 tex_size = { static_cast<double>(size.x), static_cast<double>(size.y) };
 
-        const Math::vec2 uv_bl = { texel_position.x / tex_size.x, texel_position.y / tex_size.y };
-        const Math::vec2 uv_tr = { (texel_position.x + frame_size.x) / tex_size.x, (texel_position.y + frame_size.y) / tex_size.y };
+        const Math::vec2 uv_bl = { texel_position.x / tex_size.x, (size.y - texel_position.y - frame_size.y) / tex_size.y };
+        const Math::vec2 uv_tr = { (texel_position.x + frame_size.x) / tex_size.x, (size.y - texel_position.y) / tex_size.y };
 
         Math::TransformationMatrix transform = display_matrix * Math::TranslationMatrix(Math::vec2{ frame_size.x * 0.5, frame_size.y * 0.5 }) *
                                                Math::ScaleMatrix({ static_cast<double>(frame_size.x), static_cast<double>(frame_size.y) });
