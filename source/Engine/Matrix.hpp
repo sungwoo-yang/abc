@@ -7,7 +7,6 @@
  * \par CS200 Computer Graphics I
  * \copyright DigiPen Institute of Technology
  */
-
 #pragma once
 #include "Vec2.hpp"
 
