@@ -18,5 +18,30 @@
 
 namespace CS230
 {
-    // TODO Implement the TextureManager member functions here
+    Texture* TextureManager::Load(const std::filesystem::path& file_name)
+    {
+        if (textures.find(file_name) != textures.end())
+        {
+            return textures[file_name].get();
+        }
+
+        try
+        {
+            auto texture = std::make_unique<Texture>(file_name);
+            textures[file_name] = std::move(texture);
+            Engine::GetLogger().LogEvent("Loaded texture: " + file_name.string());
+            return textures[file_name].get();
+        }
+        catch (const std::exception& e)
+        {
+            Engine::GetLogger().LogError("Failed to load texture: " + file_name.string() + " - " + e.what());
+            return nullptr;
+        }
+    }
+
+    void TextureManager::Unload()
+    {
+        textures.clear();
+        Engine::GetLogger().LogEvent("Unloaded all textures.");
+    }
 }

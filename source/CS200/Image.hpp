@@ -149,7 +149,8 @@ namespace CS200
         Math::ivec2 GetSize() const noexcept;
 
     private:
-        // TODO: Add private member variables to store image data and dimensions
+        RGBA* pixels = nullptr;
+        Math::ivec2 size{0, 0};
     };
 
 }

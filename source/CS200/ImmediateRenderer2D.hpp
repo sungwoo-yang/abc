@@ -201,6 +201,13 @@ namespace CS200
 
 
     private:
-        // TODO: Add private member variables for OpenGL handles and resources
+        struct Quad
+        {
+            OpenGL::BufferHandle      vertexBuffer{ 0 };
+            OpenGL::BufferHandle      indexBuffer{ 0 };
+            OpenGL::VertexArrayHandle vertexArray{ 0 };
+        } quad;
+        
+        OpenGL::CompiledShader quadShader{};
     };
 }
