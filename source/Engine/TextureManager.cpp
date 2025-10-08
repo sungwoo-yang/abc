@@ -35,7 +35,7 @@ namespace CS230
         }
         catch (const std::exception& e)
         {
-            Engine::GetLogger().LogError("Failed to load texture: " + file_name.string());
+            Engine::GetLogger().LogError("Failed to load texture: " + file_name.string() + " Error: " + e.what());
             return nullptr;
         }
     }
