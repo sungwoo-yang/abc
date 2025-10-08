@@ -2,7 +2,7 @@
 
 /**
  * \file
- * \author TODO Your Name
+ * \author Sungwoo Yang
  * \date 2025 Fall
  * \par CS200 Computer Graphics I
  * \copyright DigiPen Institute of Technology

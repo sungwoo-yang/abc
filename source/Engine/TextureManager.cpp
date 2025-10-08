@@ -2,7 +2,7 @@
  * \file
  * \author Rudy Castan
  * \author Jonathan Holmes
- * \author TODO Your Name
+ * \author Sungwoo Yang
  * \date 2025 Fall
  * \par CS200 Computer Graphics I
  * \copyright DigiPen Institute of Technology
@@ -23,16 +23,15 @@ namespace CS230
         auto it = textures.find(file_name);
         if (it != textures.end())
         {
-            return it->second.get();
+            return it->second;
         }
 
         try
         {
-            auto     texture = std::unique_ptr<Texture>(new Texture(file_name));
-            Texture* ptr     = texture.get();
-            textures.emplace(file_name, std::move(texture));
+            Texture* texture = new Texture(file_name);
+            textures.emplace(file_name, texture);
             Engine::GetLogger().LogEvent("Loaded texture: " + file_name.string());
-            return ptr;
+            return texture;
         }
         catch (const std::exception& e)
         {
@@ -43,6 +42,10 @@ namespace CS230
 
     void TextureManager::Unload()
     {
+        for (auto const& [path, texture] : textures)
+        {
+            delete texture;
+        }
         textures.clear();
         Engine::GetLogger().LogEvent("Unloaded all textures.");
     }
