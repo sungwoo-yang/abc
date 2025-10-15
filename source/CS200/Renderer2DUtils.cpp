@@ -7,6 +7,7 @@
  */
 #include "Renderer2DUtils.hpp"
 
+#include <algorithm>
 #include <cmath>
 
 namespace CS200::Renderer2DUtils
@@ -29,10 +30,10 @@ namespace CS200::Renderer2DUtils
 
     SDFTransform CalculateSDFTransform(const Math::TransformationMatrix& transform, double line_width) noexcept
     {
-        const vec2      world_size{ static_cast<float>(std::sqrt(transform[0][0] * transform[0][0] + transform[1][0] * transform[1][0])),
+        const vec2  world_size{ static_cast<float>(std::sqrt(transform[0][0] * transform[0][0] + transform[1][0] * transform[1][0])),
                                static_cast<float>(std::sqrt(transform[0][1] * transform[0][1] + transform[1][1] * transform[1][1])) };
-        constexpr float line_width_scale = 2.0;
-        const vec2      quad_size        = { world_size[0] + line_width_scale * static_cast<float>(line_width), world_size[1] + line_width_scale * static_cast<float>(line_width) };
+        const float line_width_addition = std::max(static_cast<float>(line_width), 0.0f);
+        const vec2  quad_size           = { world_size[0] + line_width_addition, world_size[1] + line_width_addition };
 
         const vec2 scale_up       = { quad_size[0] / world_size[0], quad_size[1] / world_size[1] };
         mat3       quad_transform = to_opengl_mat3(transform);

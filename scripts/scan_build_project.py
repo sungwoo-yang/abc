@@ -266,8 +266,8 @@ def windows_to_wsl_path(win_path: str) -> str:
 def run_cmake_command(folder, build_type, target):
     linux_prefix = []
     build_dir = os.path.join(folder, f'build/{target}-{build_type.lower()}')
-
-    if platform.system() == "Windows" and (target == "web" or target == "linux"):
+    
+    if platform.system() == "Windows" and target == "web":
         linux_prefix = ['wsl']
         folder = windows_to_wsl_path(folder)
         build_dir = windows_to_wsl_path(build_dir)
@@ -331,7 +331,7 @@ def build_project(folder, target_filter=None, build_type_filter=None):
     total_start_time = time.time()
     
     build_types = ['debug', 'developer-release', 'release']
-    targets = ['windows', 'web', 'linux'] if platform.system() == "Windows" else ['linux', 'web']
+    targets = ['windows', 'web'] if platform.system() == "Windows" else ['linux', 'web']
     
     # Apply filters
     if target_filter:

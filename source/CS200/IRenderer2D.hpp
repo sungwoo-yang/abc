@@ -140,6 +140,60 @@ namespace CS200
         virtual void DrawQuad(
             const Math::TransformationMatrix& transform, OpenGL::TextureHandle texture, Math::vec2 texture_coord_bl = Math::vec2{ 0.0, 0.0 }, Math::vec2 texture_coord_tr = Math::vec2{ 1.0, 1.0 },
             CS200::RGBA tintColor = CS200::WHITE) = 0;
+
+        /**
+         * \brief Draw a circle with optional fill and outline
+         * \param transform World transformation matrix (position, rotation, scale)
+         * \param fill_color Interior color (default: transparent)
+         * \param line_color Outline color (default: white)
+         * \param line_width Outline thickness in world units (default: 2.0)
+         *
+         * Renders a circle using the transform's scale to determine radius.
+         * Can render filled circles, outlined circles, or both.
+         *
+         */
+        virtual void DrawCircle(const Math::TransformationMatrix& transform, CS200::RGBA fill_color = CS200::CLEAR, CS200::RGBA line_color = CS200::WHITE, double line_width = 2.0) = 0;
+
+        /**
+         * \brief Draw a rectangle with optional fill and outline
+         * \param transform World transformation matrix (position, rotation, scale)
+         * \param fill_color Interior color (default: transparent)
+         * \param line_color Outline color (default: white)
+         * \param line_width Outline thickness in world units (default: 2.0)
+         *
+         * Renders a rectangle using the transform's scale to determine size.
+         * Can render filled rectangles, outlined rectangles, or both.
+         *
+         */
+        virtual void DrawRectangle(const Math::TransformationMatrix& transform, CS200::RGBA fill_color = CS200::CLEAR, CS200::RGBA line_color = CS200::WHITE, double line_width = 2.0) = 0;
+
+        /**
+         * \brief Draw a line segment with additional transformation
+         * \param transform Additional transformation to apply to line endpoints
+         * \param startPoint Starting point in local coordinates
+         * \param endPoint Ending point in local coordinates
+         * \param line_color Color of the line (default: white)
+         * \param line_width Thickness of the line in world units (default: 2.0)
+         *
+         * Renders a line between two points after applying the transform.
+         * Useful for drawing lines relative to objects or in transformed coordinate spaces.
+         *
+         */
+        virtual void DrawLine(const Math::TransformationMatrix& transform, Math::vec2 startPoint, Math::vec2 endPoint, CS200::RGBA line_color = CS200::WHITE, double line_width = 2.0) = 0;
+
+        /**
+         * \brief Draw a line segment in world coordinates
+         * \param start_point Starting point in world coordinates
+         * \param end_point Ending point in world coordinates
+         * \param line_color Color of the line (default: white)
+         * \param line_width Thickness of the line in world units (default: 2.0)
+         *
+         * Convenience method for drawing lines directly in world space without
+         * additional transformation. Equivalent to calling the other DrawLine()
+         * with an identity transformation matrix.
+         *
+         */
+        virtual void DrawLine(Math::vec2 start_point, Math::vec2 end_point, CS200::RGBA line_color = CS200::WHITE, double line_width = 2.0) = 0;
     };
 
 }

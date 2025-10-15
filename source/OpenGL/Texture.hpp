@@ -68,7 +68,9 @@ namespace OpenGL
     {
         Repeat            = GL_REPEAT,              ///< Tile texture infinitely in all directions
         ClampToEdge       = GL_CLAMP_TO_EDGE,       ///< Stretch edge pixels, preventing tiling artifacts
+        ClampToBorder     = GL_CLAMP_TO_BORDER,     ///< Use border color outside texture bounds
         MirroredRepeat    = GL_MIRRORED_REPEAT,     ///< Tile with alternating mirror reflections
+        MirrorClampToEdge = GL_MIRROR_CLAMP_TO_EDGE ///< Mirror once, then clamp to edge
     };
 
     /**
@@ -135,7 +137,7 @@ namespace OpenGL
      *
      * The implementation creates the OpenGL texture object, applies the
      * specified filtering and wrapping settings, and uploads the pixel
-     * data using GL::TexImage2D() for immediate GPU availability.
+     * data using glTexImage2D() for immediate GPU availability.
      */
     [[nodiscard]] TextureHandle
         CreateTextureFromMemory(Math::ivec2 size, std::span<const CS200::RGBA> colors, Filtering filtering = Filtering::NearestPixel, Wrapping wrapping = Wrapping::Repeat) noexcept;
@@ -165,8 +167,8 @@ namespace OpenGL
      * - Procedural texture generation targets
      *
      * The implementation uses different OpenGL functions depending on the
-     * available OpenGL version: GL::TexStorage2D() for newer versions (more
-     * efficient) or GL::TexImage2D() with null data for compatibility.
+     * available OpenGL version: glTexStorage2D() for newer versions (more
+     * efficient) or glTexImage2D() with null data for compatibility.
      *
      * Memory efficiency:
      * Creating empty textures avoids unnecessary data transfers and is

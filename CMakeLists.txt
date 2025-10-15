@@ -14,7 +14,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 #     message(STATUS "${_variableName}=${${_variableName}}")
 # endforeach()
 
-project(cs200_HW1)
+project(cs200_fun)
 
 include(cmake/StandardProjectSettings.cmake)
 

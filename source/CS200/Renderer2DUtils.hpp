@@ -1,4 +1,4 @@
-﻿/**
+/**
  * \file
  * \author Rudy Castan
  * \date 2025 Fall
@@ -52,35 +52,6 @@ namespace CS200::Renderer2DUtils
         return { static_cast<float>(transform[0][0]), static_cast<float>(transform[1][0]), static_cast<float>(transform[2][0]),
                  static_cast<float>(transform[0][1]), static_cast<float>(transform[1][1]), static_cast<float>(transform[2][1]),
                  static_cast<float>(transform[0][2]), static_cast<float>(transform[1][2]), static_cast<float>(transform[2][2]) };
-    }
-
-    /**
-     * \brief Convert packed RGBA color to normalized float array for shaders
-     * \param rgba Packed color in 0xRRGGBBAA format
-     * \return Array of 4 floats [R, G, B, A] in range [0.0, 1.0]
-     *
-     * Extracts individual color components from packed 32-bit color format and
-     * converts them to normalized floating-point values suitable for GPU shaders.
-     * This is the standard format expected by OpenGL uniform color parameters.
-     *
-     * Implementation requirements:
-     * - Extract 8-bit components using bit shifting and masking
-     * - Convert from [0-255] integer range to [0.0-1.0] float range
-     * - Maintain precision during conversion (divide by 255.0f)
-     * - Handle component order: Red, Green, Blue, Alpha
-     * - Use bit masks: R=0xff000000, G=0x00ff0000, B=0x0000ff00, A=0x000000ff
-     *
-     * Bit Extraction Pattern:
-     * - Red:   (rgba & 0xff000000) >> 24
-     * - Green: (rgba & 0x00ff0000) >> 16
-     * - Blue:  (rgba & 0x0000ff00) >> 8
-     * - Alpha: (rgba & 0x000000ff) >> 0
-     */
-    constexpr std::array<float, 4> unpack_color(CS200::RGBA rgba) noexcept
-    {
-        constexpr float scale = 1.0f / 255.0f;
-        return { static_cast<float>((rgba & 0xff000000) >> 24) * scale, static_cast<float>((rgba & 0x00ff0000) >> 16) * scale, static_cast<float>((rgba & 0x0000ff00) >> 8) * scale,
-                 static_cast<float>((rgba & 0x000000ff) >> 0) * scale };
     }
 
     /**

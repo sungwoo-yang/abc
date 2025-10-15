@@ -16,11 +16,13 @@ set(SOURCE_CODE
     CS200/RenderingAPI.hpp CS200/RenderingAPI.cpp
     CS200/RGBA.hpp
 
-    Demo/DemoTexturing.hpp Demo/DemoTexturing.cpp
-    Demo/DemoCS230Textures.hpp Demo/DemoCS230Textures.cpp
+    Demo/DemoShapes.hpp Demo/DemoShapes.cpp
+    Demo/DemoFramebuffer.hpp Demo/DemoFramebuffer.cpp
+    Demo/DemoText.hpp Demo/DemoText.cpp
 
     Engine/Engine.hpp Engine/Engine.cpp
     Engine/Error.hpp
+    Engine/Font.hpp Engine/Font.cpp
     Engine/FPS.hpp
     Engine/GameState.hpp
     Engine/GameStateManager.hpp Engine/GameStateManager.cpp
@@ -29,6 +31,7 @@ set(SOURCE_CODE
     Engine/Matrix.hpp Engine/Matrix.cpp
     Engine/Path.hpp Engine/Path.cpp
     Engine/Random.hpp Engine/Random.cpp
+    Engine/Rect.hpp
     Engine/Texture.hpp Engine/Texture.cpp
     Engine/TextureManager.hpp Engine/TextureManager.cpp
     Engine/Timer.hpp
@@ -37,6 +40,7 @@ set(SOURCE_CODE
 
     OpenGL/Buffer.hpp OpenGL/Buffer.cpp
     OpenGL/Environment.hpp
+    OpenGL/Framebuffer.hpp OpenGL/Framebuffer.cpp
     OpenGL/GL.cpp OpenGL/GL.hpp
     OpenGL/GLConstants.hpp
     OpenGL/GLTypes.hpp

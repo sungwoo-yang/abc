@@ -1,12 +1,11 @@
-﻿/**
+/**
  * \file
  * \author Rudy Castan
  * \date 2024 Fall
  * \copyright DigiPen Institute of Technology
  */
 
-
-#include "Demo/DemoTexturing.hpp"
+#include "Demo/DemoShapes.hpp"
 #include "Engine/Engine.hpp"
 #include "Engine/GameStateManager.hpp"
 #include "Engine/Window.hpp"
@@ -64,7 +63,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
 {
     Engine& engine = Engine::Instance();
     engine.Start("Sungwoo Yang");
-    engine.GetGameStateManager().PushState<DemoTexturing>();
+    engine.GetGameStateManager().PushState<DemoShapes>();
 
 #if !defined(__EMSCRIPTEN__)
     while (engine.HasGameEnded() == false)
