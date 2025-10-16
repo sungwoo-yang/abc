@@ -47,8 +47,8 @@ namespace Math
 
     struct [[nodiscard]] irect
     {
-        Math::ivec2 point_1{ 0.0, 0.0 };
-        Math::ivec2 point_2{ 0.0, 0.0 };
+        Math::ivec2 point_1{ 0, 0 };
+        Math::ivec2 point_2{ 0, 0 };
 
         double Left() const noexcept
         {

@@ -2,7 +2,7 @@
  * \file
  * \author Rudy Castan
  * \author Jonathan Holmes
- * \author Sungwoo Yang
+ * \author TODO: Your Name
  * \date 2025 Fall
  * \par CS200 Computer Graphics I
  * \copyright DigiPen Institute of Technology
@@ -144,6 +144,5 @@ namespace CS230
     private:
         // TODO: Add private helper methods as needed
         // TODO: Add private member variables as needed
-        void FindCharRects();
     };
 }

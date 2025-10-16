@@ -21,15 +21,33 @@ namespace OpenGL
     FramebufferWithColor CreateFramebufferWithColor(Math::ivec2 size)
     {
         FramebufferWithColor fb{};
-        // TODO create framebuffer with color attachment
-        // TODO verify framebuffer completeness
+
+        fb.ColorAttachment = CreateRGBATexture(size, Filtering::Linear, Wrapping::ClampToEdge);
+
+        GL::GenFramebuffers(1, &fb.Framebuffer);
+        GL::BindFramebuffer(GL_FRAMEBUFFER, fb.Framebuffer);
+
+        GL::FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fb.ColorAttachment, 0);
+
+        verify_framebuffer_complete(fb.Framebuffer);
+
+        GL::BindFramebuffer(GL_FRAMEBUFFER, 0);
+
         return fb;
     }
 
     void DestroyFramebufferWithColor(FramebufferWithColor& framebuffer_with_color) noexcept
     {
-        // TODO destroy framebuffer and color attachment
-        // TODO set handles to 0
+        if (framebuffer_with_color.Framebuffer != 0)
+        {
+            GL::DeleteFramebuffers(1, &framebuffer_with_color.Framebuffer);
+            framebuffer_with_color.Framebuffer = 0;
+        }
+        if (framebuffer_with_color.ColorAttachment != 0)
+        {
+            GL::DeleteTextures(1, &framebuffer_with_color.ColorAttachment);
+            framebuffer_with_color.ColorAttachment = 0;
+        }
     }
 }
 
@@ -37,12 +55,12 @@ namespace
 {
     void verify_framebuffer_complete(OpenGL::FramebufferHandle framebuffer)
     {
-        // TODO bind framebuffer
-        // TODO check framebuffer status
+        GL::BindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+        GLenum status_result = GL::CheckFramebufferStatus(GL_FRAMEBUFFER);
 
         if (status_result == GL_FRAMEBUFFER_COMPLETE)
         {
-            // TODO unbind framebuffer
+            GL::BindFramebuffer(GL_FRAMEBUFFER, 0);
             return; // Framebuffer is complete and ready to use
         }
 
@@ -83,7 +101,7 @@ namespace
         }
 
         Engine::GetLogger().LogError(message.str());
-        // TODO unbind framebuffer
+        GL::BindFramebuffer(GL_FRAMEBUFFER, 0);
         throw std::runtime_error{ message.str() };
     }
 }
