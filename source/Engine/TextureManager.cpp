@@ -60,6 +60,8 @@ void CS230::TextureManager::StartRenderTextureMode(int width, int height)
     GL::GetFloatv(GL_COLOR_CLEAR_VALUE, savedState.clearColor.data());
     GL::GetIntegerv(GL_VIEWPORT, savedState.viewport.data());
 
+    savedState.size = { width, height };
+
     GL::BindFramebuffer(GL_FRAMEBUFFER, savedState.framebuffer.Framebuffer);
     GL::Viewport(0, 0, width, height);
     GL::ClearColor(0.f, 0.f, 0.f, 0.f);
@@ -79,7 +81,7 @@ std::shared_ptr<CS230::Texture> CS230::TextureManager::EndRenderTextureMode()
     GL::Viewport(savedState.viewport[0], savedState.viewport[1], savedState.viewport[2], savedState.viewport[3]);
     GL::ClearColor(savedState.clearColor[0], savedState.clearColor[1], savedState.clearColor[2], savedState.clearColor[3]);
 
-    auto new_texture = std::make_shared<Texture>(savedState.framebuffer.ColorAttachment, savedState.size);
+    auto new_texture = std::shared_ptr<Texture>(new Texture(savedState.framebuffer.ColorAttachment, savedState.size));
 
     auto temp_fbo                          = savedState.framebuffer.Framebuffer;
     savedState.framebuffer.ColorAttachment = 0;

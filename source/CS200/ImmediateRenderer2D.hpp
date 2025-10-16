@@ -1,7 +1,7 @@
 /**
  * \file
  * \author Rudy Castan
- * \author Sungwoo Yang
+ * \author TODO: Your Name
  * \date 2025 Fall
  * \par CS200 Computer Graphics I
  * \copyright DigiPen Institute of Technology
@@ -11,6 +11,7 @@
 #include "IRenderer2D.hpp"
 #include "OpenGL/Shader.hpp"
 #include "OpenGL/VertexArray.hpp"
+#include "Engine/Matrix.hpp"
 #include <array>
 
 namespace CS200
@@ -279,7 +280,6 @@ namespace CS200
          */
         void DrawSDF(const Math::TransformationMatrix& transform, CS200::RGBA fill_color, CS200::RGBA line_color, double line_width, SDFShape sdf_shape);
 
-
     private:
         struct Quad
         {
@@ -288,6 +288,9 @@ namespace CS200
             OpenGL::VertexArrayHandle vertexArray{ 0 };
         } quad;
 
-        OpenGL::CompiledShader quadShader{};
+        OpenGL::CompiledShader     quadShader{};
+        Quad                       sdfQuad;
+        OpenGL::CompiledShader     sdfShader{};
+        Math::TransformationMatrix view_projection;
     };
 }

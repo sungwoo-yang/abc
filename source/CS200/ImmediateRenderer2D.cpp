@@ -1,7 +1,7 @@
 /**
  * \file
  * \author Rudy Castan
- * \author Sungwoo Yang
+ * \author TODO Your Name
  * \date 2025 Fall
  * \par CS200 Computer Graphics I
  * \copyright DigiPen Institute of Technology
@@ -17,7 +17,9 @@
 
 namespace CS200
 {
-    ImmediateRenderer2D::ImmediateRenderer2D(ImmediateRenderer2D&& other) noexcept : quad(std::exchange(other.quad, {})), quadShader(std::exchange(other.quadShader, {}))
+    ImmediateRenderer2D::ImmediateRenderer2D(ImmediateRenderer2D&& other) noexcept
+        : quad(std::exchange(other.quad, {})), quadShader(std::exchange(other.quadShader, {})), sdfQuad(std::exchange(other.sdfQuad, {})), sdfShader(std::exchange(other.sdfShader, {})),
+          view_projection(std::exchange(other.view_projection, {}))
     {
     }
 
@@ -25,6 +27,9 @@ namespace CS200
     {
         std::swap(quad, other.quad);
         std::swap(quadShader, other.quadShader);
+        std::swap(sdfQuad, other.sdfQuad);
+        std::swap(sdfShader, other.sdfShader);
+        std::swap(view_projection, other.view_projection);
         return *this;
     }
 
@@ -57,6 +62,27 @@ namespace CS200
         quad.vertexArray = OpenGL::CreateVertexArrayObject(layout, quad.indexBuffer);
 
         quadShader = OpenGL::CreateShader(std::filesystem::path{ "Assets/shaders/ImmediateRenderer2D/quad.vert" }, std::filesystem::path{ "Assets/shaders/ImmediateRenderer2D/quad.frag" });
+
+        struct SDFVertex
+        {
+            float x, y;
+        };
+
+        constexpr std::array sdf_vertices = {
+            SDFVertex{ -0.5f, -0.5f },
+            SDFVertex{ -0.5f,  0.5f },
+            SDFVertex{  0.5f,  0.5f },
+            SDFVertex{  0.5f, -0.5f }
+        };
+        sdfQuad.vertexBuffer = OpenGL::CreateBuffer(OpenGL::BufferType::Vertices, std::as_bytes(std::span{ sdf_vertices }));
+        sdfQuad.indexBuffer  = quad.indexBuffer;
+
+        const auto sdf_layout = {
+            OpenGL::VertexBuffer{ sdfQuad.vertexBuffer, { OpenGL::Attribute::Float2 } }
+        };
+        sdfQuad.vertexArray = OpenGL::CreateVertexArrayObject(sdf_layout, sdfQuad.indexBuffer);
+
+        sdfShader = OpenGL::CreateShader(std::filesystem::path{ "Assets/shaders/ImmediateRenderer2D/sdf.vert" }, std::filesystem::path{ "Assets/shaders/ImmediateRenderer2D/sdf.frag" });
     }
 
     void ImmediateRenderer2D::Shutdown()
@@ -66,23 +92,34 @@ namespace CS200
         GL::DeleteVertexArrays(1, &quad.vertexArray);
         OpenGL::DestroyShader(quadShader);
         quad = {};
+
+        GL::DeleteBuffers(1, &sdfQuad.vertexBuffer);
+        GL::DeleteVertexArrays(1, &sdfQuad.vertexArray);
+        OpenGL::DestroyShader(sdfShader);
+        sdfQuad = {};
     }
 
-    void ImmediateRenderer2D::BeginScene(const Math::TransformationMatrix& view_projection)
+    void ImmediateRenderer2D::BeginScene(const Math::TransformationMatrix& view_projection_matrix)
     {
+        view_projection          = view_projection_matrix;
+        const auto to_ndc_opengl = Renderer2DUtils::to_opengl_mat3(view_projection);
+
         GL::UseProgram(quadShader.Shader);
-        const auto& locations     = quadShader.UniformLocations;
-        const auto  to_ndc_opengl = Renderer2DUtils::to_opengl_mat3(view_projection);
-        GL::UniformMatrix3fv(locations.at("u_ndc_matrix"), 1, GL_FALSE, to_ndc_opengl.data());
+        GL::UniformMatrix3fv(quadShader.UniformLocations.at("u_ndc_matrix"), 1, GL_FALSE, to_ndc_opengl.data());
+
+        GL::UseProgram(sdfShader.Shader);
+        GL::UniformMatrix3fv(sdfShader.UniformLocations.at("u_ndc_matrix"), 1, GL_FALSE, to_ndc_opengl.data());
+
+        GL::UseProgram(0);
     }
 
     void ImmediateRenderer2D::EndScene()
     {
-        GL::UseProgram(0);
     }
 
     void ImmediateRenderer2D::DrawQuad(const Math::TransformationMatrix& transform, OpenGL::TextureHandle texture, Math::vec2 texture_coord_bl, Math::vec2 texture_coord_tr, CS200::RGBA tintColor)
     {
+        GL::UseProgram(quadShader.Shader);
         GL::BindVertexArray(quad.vertexArray);
         GL::BindTexture(GL_TEXTURE_2D, texture);
 
@@ -105,6 +142,7 @@ namespace CS200
 
         GL::BindTexture(GL_TEXTURE_2D, 0);
         GL::BindVertexArray(0);
+        GL::UseProgram(0);
     }
 
     void ImmediateRenderer2D::DrawCircle(const Math::TransformationMatrix& transform, CS200::RGBA fill_color, CS200::RGBA line_color, double line_width)
@@ -126,5 +164,31 @@ namespace CS200
     void ImmediateRenderer2D::DrawLine(Math::vec2 start_point, Math::vec2 end_point, CS200::RGBA line_color, double line_width)
     {
         DrawLine(Math::TransformationMatrix{}, start_point, end_point, line_color, line_width);
+    }
+
+    void ImmediateRenderer2D::DrawSDF(const Math::TransformationMatrix& transform, CS200::RGBA fill_color, CS200::RGBA line_color, double line_width, SDFShape sdf_shape)
+    {
+        GL::UseProgram(sdfShader.Shader);
+        GL::BindVertexArray(sdfQuad.vertexArray);
+
+        const auto& locations = sdfShader.UniformLocations;
+
+        const auto sdf_transform_info = Renderer2DUtils::CalculateSDFTransform(transform, line_width);
+
+        GL::UniformMatrix3fv(locations.at("u_model_matrix"), 1, GL_FALSE, sdf_transform_info.QuadTransform.data());
+        GL::Uniform2fv(locations.at("u_world_size"), 1, sdf_transform_info.WorldSize.data());
+        GL::Uniform2fv(locations.at("u_quad_size"), 1, sdf_transform_info.QuadSize.data());
+
+        const auto fill = unpack_color(fill_color);
+        const auto line = unpack_color(line_color);
+        GL::Uniform4fv(locations.at("u_fill_color"), 1, fill.data());
+        GL::Uniform4fv(locations.at("u_line_color"), 1, line.data());
+        GL::Uniform1f(locations.at("u_line_width"), static_cast<float>(line_width));
+        GL::Uniform1i(locations.at("u_shape_type"), static_cast<int>(sdf_shape));
+
+        GL::DrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, nullptr);
+
+        GL::BindVertexArray(0);
+        GL::UseProgram(0);
     }
 }

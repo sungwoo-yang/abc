@@ -15,7 +15,7 @@ uniform int u_shape_type;
 uniform vec4 u_fill_color;
 uniform vec4 u_line_color;
 uniform float u_line_width;
-uniform vec2 u_world_size;
+uniform highp vec2 u_world_size;
 
 out vec4 frag_color;
 
@@ -45,11 +45,11 @@ void main()
     float line_width_in_sdf = u_line_width / max(u_world_size.x, u_world_size.y);
     float inner_edge = -line_width_in_sdf;
     
-    float outer_mix = smoothstep(0.0, fwidth(dist), dist);
     float inner_mix = smoothstep(inner_edge, inner_edge + fwidth(dist), dist);
+    vec4 shape_color = mix(u_fill_color, u_line_color, inner_mix);
 
-    vec4 color = mix(u_line_color, u_fill_color, inner_mix);
-    frag_color = mix(vec4(0.0), color, outer_mix);
+    float outer_mix = smoothstep(0.0, fwidth(dist), dist);
+    frag_color = mix(shape_color, vec4(0.0), outer_mix);
 
     if (frag_color.a < 0.01)
     {
