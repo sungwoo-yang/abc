@@ -2,14 +2,13 @@
  * \file
  * \author Rudy Castan
  * \author Jonathan Holmes
- * \author Sungwoo Yang
+ * \author TODO: Your Name
  * \date 2025 Fall
  * \par CS200 Computer Graphics I
  * \copyright DigiPen Institute of Technology
  */
 
 #pragma once
-#include "CS200/Image.hpp"
 #include "Rect.hpp"
 #include "Texture.hpp"
 #include "Vec2.hpp"
@@ -142,21 +141,8 @@ namespace CS230
          */
         std::shared_ptr<Texture> PrintToTexture(const std::string& text, CS200::RGBA color = 0xFFFFFFFF);
 
-        Math::ivec2 MeasureText(const std::string& text);
-        void        CleanCache();
-
-        std::shared_ptr<Texture> fontTexture;
-        static constexpr int first_char = 32;
-        static constexpr int last_char  = 126;
-        static constexpr int num_chars  = last_char - first_char + 1;
-        Math::irect char_rects[num_chars];
-
-        struct CachedTexture
-        {
-            std::shared_ptr<Texture> texture;
-            uint64_t last_used_frame = 0;
-        };
-
-        std::unordered_map<std::string, CachedTexture> textureCache;
+    private:
+        // TODO: Add private helper methods as needed
+        // TODO: Add private member variables as needed
     };
 }
