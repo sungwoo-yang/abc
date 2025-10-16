@@ -2,7 +2,7 @@
  * \file
  * \author Rudy Castan
  * \author Jonathan Holmes
- * \author Sungwoo Yang
+ * \author TODO: Your Name
  * \date 2025 Fall
  * \par CS200 Computer Graphics I
  * \copyright DigiPen Institute of Technology
@@ -142,9 +142,7 @@ namespace CS230
         std::shared_ptr<Texture> PrintToTexture(const std::string& text, CS200::RGBA color = 0xFFFFFFFF);
 
     private:
-        Math::ivec2 MeasureText(const std::string& text) const;
-
-        std::shared_ptr<Texture>              fontTexture;
-        std::unordered_map<char, Math::irect> characterRects;
+        // TODO: Add private helper methods as needed
+        // TODO: Add private member variables as needed
     };
 }
