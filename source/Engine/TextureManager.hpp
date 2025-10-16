@@ -2,7 +2,7 @@
  * \file
  * \author Rudy Castan
  * \author Jonathan Holmes
- * \author TODO: Your Name
+ * \author Sungwoo Yang
  * \date 2025 Fall
  * \par CS200 Computer Graphics I
  * \copyright DigiPen Institute of Technology
@@ -251,5 +251,6 @@ namespace CS230
          * Generated textures from render-to-texture operations are returned directly
          * to the caller without caching, allowing independent lifecycle management.
          */
+        std::unordered_map<std::string, std::shared_ptr<Texture>> textures;
     };
 }
