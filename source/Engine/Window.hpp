@@ -2,7 +2,7 @@
  * \file
  * \author Rudy Castan
  * \author Jonathan Holmes
- * \author Sungwoo Yang
+ * \author TODO Your Name
  * \date 2025 Fall
  * \par CS200 Computer Graphics I
  * \copyright DigiPen Institute of Technology
@@ -45,17 +45,7 @@ namespace CS230
         Window& operator=(Window&&) noexcept = delete;
 
     private:
-        void setupSDLWindow(std::string_view title);
-        void setupOpenGL();
-
-        gsl::owner<SDL_Window*>        sdlWindow = nullptr;
-        gsl::owner<SDL_GLContext>      glContext = nullptr;
-        Math::ivec2                    size{ default_width, default_height };
-        std::function<void(SDL_Event)> eventCallback;
-        bool                           is_closed = true;
-
-        static constexpr int         default_width  = 800;
-        static constexpr int         default_height = 600;
-        static constexpr CS200::RGBA default_background{ CS200::WHITE };
+        // TODO private data and helper member functions here
+        // TODO default size should be 800x600
     };
 }

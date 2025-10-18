@@ -2,11 +2,12 @@
  * \file
  * \author Rudy Castan
  * \author Jonathan Holmes
- * \author Sungwoo Yang
+ * \author TODO Your Name
  * \date 2025 Fall
  * \par CS200 Computer Graphics I
  * \copyright DigiPen Institute of Technology
  */
+
 #pragma once
 #include "Vec2.hpp"
 
@@ -17,15 +18,9 @@ namespace Math
     public:
         TransformationMatrix();
 
-        constexpr double* operator[](int index)
-        {
-            return matrix[index];
-        };
+        constexpr double* operator[](int index); // TODO
 
-        constexpr const double* operator[](int index) const
-        {
-            return matrix[index];
-        };
+        constexpr const double* operator[](int index) const; // TODO
 
         TransformationMatrix  operator*(TransformationMatrix m) const;
         TransformationMatrix& operator*=(TransformationMatrix m);

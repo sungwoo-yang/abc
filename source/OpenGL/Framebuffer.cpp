@@ -1,7 +1,7 @@
 /**
  * \file
  * \author Rudy Castan
- * \author Sungwoo Yang
+ * \author TODO: Your Name  
  * \date 2025 Fall
  * \par CS200 Computer Graphics I
  * \copyright DigiPen Institute of Technology
@@ -21,33 +21,15 @@ namespace OpenGL
     FramebufferWithColor CreateFramebufferWithColor(Math::ivec2 size)
     {
         FramebufferWithColor fb{};
-        fb.ColorAttachment = CreateRGBATexture(size);
-
-        GL::GenFramebuffers(1, &fb.Framebuffer);
-        GL::BindFramebuffer(GL_FRAMEBUFFER, fb.Framebuffer);
-        GL::FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fb.ColorAttachment, 0);
-
-        GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT0 };
-        GL::DrawBuffers(1, drawBuffers);
-
-        verify_framebuffer_complete(fb.Framebuffer);
-
-        GL::BindFramebuffer(GL_FRAMEBUFFER, 0);
+        // TODO create framebuffer with color attachment
+        // TODO verify framebuffer completeness
         return fb;
     }
 
     void DestroyFramebufferWithColor(FramebufferWithColor& framebuffer_with_color) noexcept
     {
-        if (framebuffer_with_color.Framebuffer != 0)
-        {
-            GL::DeleteFramebuffers(1, &framebuffer_with_color.Framebuffer);
-            framebuffer_with_color.Framebuffer = 0;
-        }
-        if (framebuffer_with_color.ColorAttachment != 0)
-        {
-            GL::DeleteTextures(1, &framebuffer_with_color.ColorAttachment);
-            framebuffer_with_color.ColorAttachment = 0;
-        }
+        // TODO destroy framebuffer and color attachment
+        // TODO set handles to 0
     }
 }
 
@@ -55,12 +37,12 @@ namespace
 {
     void verify_framebuffer_complete(OpenGL::FramebufferHandle framebuffer)
     {
-        GL::BindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-        GLenum status_result = GL::CheckFramebufferStatus(GL_FRAMEBUFFER);
+        // TODO bind framebuffer
+        // TODO check framebuffer status
 
         if (status_result == GL_FRAMEBUFFER_COMPLETE)
         {
-            GL::BindFramebuffer(GL_FRAMEBUFFER, 0);
+            // TODO unbind framebuffer
             return; // Framebuffer is complete and ready to use
         }
 
@@ -101,7 +83,7 @@ namespace
         }
 
         Engine::GetLogger().LogError(message.str());
-        GL::BindFramebuffer(GL_FRAMEBUFFER, 0);
+        // TODO unbind framebuffer
         throw std::runtime_error{ message.str() };
     }
 }

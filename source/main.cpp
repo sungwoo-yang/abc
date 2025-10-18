@@ -62,7 +62,7 @@ EMSCRIPTEN_BINDINGS(main_window)
 int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
 {
     Engine& engine = Engine::Instance();
-    engine.Start("Sungwoo Yang");
+    engine.Start("TODO CS200 HW5"); // TODO put your full name here
     engine.GetGameStateManager().PushState<DemoShapes>();
 
 #if !defined(__EMSCRIPTEN__)

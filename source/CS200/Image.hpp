@@ -1,7 +1,7 @@
 ﻿/**
  * \file
  * \author Rudy Castan
- * \author Sungwoo Yang
+ * \author TODO Your Name
  * \date 2025 Fall
  * \par CS200 Computer Graphics I
  * \copyright DigiPen Institute of Technology
@@ -149,8 +149,7 @@ namespace CS200
         Math::ivec2 GetSize() const noexcept;
 
     private:
-        RGBA* pixels = nullptr;
-        Math::ivec2 size{0, 0};
+        // TODO: Add private member variables to store image data and dimensions
     };
 
 }
