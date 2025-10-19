@@ -33,7 +33,6 @@ namespace OpenGL
         GL::BufferData(static_cast<GLenum>(type), static_cast<GLsizeiptr>(bytes), static_buffer_data.data(), GL_STATIC_DRAW);
         GL::BindBuffer(static_cast<GLenum>(type), 0);
         return handle;
-        return 0;
     }
 
     void UpdateBufferData(BufferType type, BufferHandle buffer, std::span<const std::byte> data_to_copy, GLsizei starting_offset) noexcept

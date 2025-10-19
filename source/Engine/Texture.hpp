@@ -2,7 +2,7 @@
  * \file
  * \author Rudy Castan
  * \author Jonathan Holmes
- * \author TODO Your Name
+ * \author Sungwoo Yang
  * \date 2025 Fall
  * \par CS200 Computer Graphics I
  * \copyright DigiPen Institute of Technology
@@ -233,6 +233,7 @@ namespace CS230
 
 
     private:
-        // TODO: Add private member variables as needed
+        OpenGL::TextureHandle textureHandle{};
+        Math::ivec2           size{};
     };
 }
