@@ -13,7 +13,7 @@
 #include "CS200/RGBA.hpp"
 #include "CS200/RenderingAPI.hpp"
 #include "DemoFramebuffer.hpp"
-// #include "DemoText.hpp"
+#include "DemoText.hpp"
 #include "Engine/Engine.hpp"
 #include "Engine/GameStateManager.hpp"
 #include "Engine/Input.hpp"
@@ -210,11 +210,11 @@ void DemoShapes::DrawImGui()
             Engine::GetGameStateManager().PopState();
             Engine::GetGameStateManager().PushState<DemoFramebuffer>();
         }
-        // if (ImGui::Button("Switch to Demo Text"))
-        // {
-        //     Engine::GetGameStateManager().PopState();
-        //     Engine::GetGameStateManager().PushState<DemoText>();
-        // }
+        if (ImGui::Button("Switch to Demo Text"))
+        {
+            Engine::GetGameStateManager().PopState();
+            Engine::GetGameStateManager().PushState<DemoText>();
+        }
     }
     ImGui::End();
 }
