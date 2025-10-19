@@ -1,7 +1,7 @@
 /**
  * \file
  * \author Rudy Castan
- * \author Sungwoo Yang
+ * \author TODO Your Name
  * \date 2025 Fall
  * \par CS200 Computer Graphics I
  * \copyright DigiPen Institute of Technology
@@ -17,64 +17,19 @@
 
 namespace CS200
 {
-    namespace
-    {
-        struct QuadVertex
-        {
-            float x, y;
-            float u, v;
-        };
-
-        constexpr std::array<QuadVertex, 4> QuadVertices = {
-            QuadVertex{ -0.5f, -0.5f, 0.0f, 0.0f },
-            QuadVertex{ +0.5f, -0.5f, 1.0f, 0.0f },
-            QuadVertex{ +0.5f, +0.5f, 1.0f, 1.0f },
-            QuadVertex{ -0.5f, +0.5f, 0.0f, 1.0f }
-        };
-
-        constexpr std::array<unsigned short, 6> QuadIndices = { 0, 1, 2, 2, 3, 0 };
-
-        struct SDFVertex
-        {
-            float x, y;
-        };
-
-        constexpr std::array<SDFVertex, 4> SDFVertices = {
-            SDFVertex{ -0.5f, -0.5f },
-            SDFVertex{ +0.5f, -0.5f },
-            SDFVertex{ +0.5f, +0.5f },
-            SDFVertex{ -0.5f, +0.5f }
-        };
-
-        struct CameraUniforms
-        {
-            Renderer2DUtils::mat3 u_ViewProjectionMatrix;
-            float                 padding[3];
-        };
-    }
-
     ImmediateRenderer2D::ImmediateRenderer2D(ImmediateRenderer2D&& other) noexcept
-        : cameraUBO(std::exchange(other.cameraUBO, 0)), quadShader(std::move(other.quadShader)), quadVAO(std::exchange(other.quadVAO, 0)), quadVBO(std::exchange(other.quadVBO, 0)),
-          quadIBO(std::exchange(other.quadIBO, 0)), sdfShader(std::move(other.sdfShader)), sdfVAO(std::exchange(other.sdfVAO, 0)), sdfVBO(std::exchange(other.sdfVBO, 0))
+        : quad(std::exchange(other.quad, {})), quadShader(std::exchange(other.quadShader, {})), sdfQuad(std::exchange(other.sdfQuad, {})), sdfShader(std::exchange(other.sdfShader, {})),
+          view_projection(std::exchange(other.view_projection, {}))
     {
     }
 
     ImmediateRenderer2D& ImmediateRenderer2D::operator=(ImmediateRenderer2D&& other) noexcept
     {
-        if (this == &other)
-            return *this;
-
-        Shutdown();
-
-        cameraUBO  = std::exchange(other.cameraUBO, 0);
-        quadShader = std::move(other.quadShader);
-        quadVAO    = std::exchange(other.quadVAO, 0);
-        quadVBO    = std::exchange(other.quadVBO, 0);
-        quadIBO    = std::exchange(other.quadIBO, 0);
-        sdfShader  = std::move(other.sdfShader);
-        sdfVAO     = std::exchange(other.sdfVAO, 0);
-        sdfVBO     = std::exchange(other.sdfVBO, 0);
-
+        std::swap(quad, other.quad);
+        std::swap(quadShader, other.quadShader);
+        std::swap(sdfQuad, other.sdfQuad);
+        std::swap(sdfShader, other.sdfShader);
+        std::swap(view_projection, other.view_projection);
         return *this;
     }
 
@@ -85,47 +40,77 @@ namespace CS200
 
     void ImmediateRenderer2D::Init()
     {
-        quadShader = OpenGL::CreateShader(std::filesystem::path("Assets/shaders/ImmediateRenderer2D/quad.vert"), std::filesystem::path("Assets/shaders/ImmediateRenderer2D/quad.frag"));
-        quadVBO    = OpenGL::CreateBuffer(OpenGL::BufferType::Vertices, std::as_bytes(std::span(QuadVertices)));
-        quadIBO    = OpenGL::CreateBuffer(OpenGL::BufferType::Indices, std::as_bytes(std::span(QuadIndices)));
+        struct Vertex
+        {
+            float x, y, u, v;
+        };
 
-        quadVAO = OpenGL::CreateVertexArrayObject(
-            OpenGL::VertexBuffer{
-                quadVBO, OpenGL::BufferLayout{ OpenGL::Attribute::Float2, OpenGL::Attribute::Float2 }
-        },
-            quadIBO);
+        constexpr std::array vertices = {
+            Vertex{ -0.5f, -0.5f, 0.0f, 0.0f },
+            Vertex{ -0.5f,  0.5f, 0.0f, 1.0f },
+            Vertex{  0.5f,  0.5f, 1.0f, 1.0f },
+            Vertex{  0.5f, -0.5f, 1.0f, 0.0f }
+        };
+        constexpr std::array<unsigned char, 6> indices = { 0, 1, 2, 0, 2, 3 };
 
-        sdfShader = OpenGL::CreateShader(std::filesystem::path("Assets/shaders/ImmediateRenderer2D/sdf.vert"), std::filesystem::path("Assets/shaders/ImmediateRenderer2D/sdf.frag"));
-        sdfVBO    = OpenGL::CreateBuffer(OpenGL::BufferType::Vertices, std::as_bytes(std::span(SDFVertices)));
+        quad.vertexBuffer = OpenGL::CreateBuffer(OpenGL::BufferType::Vertices, std::as_bytes(std::span{ vertices }));
+        quad.indexBuffer  = OpenGL::CreateBuffer(OpenGL::BufferType::Indices, std::as_bytes(std::span{ indices }));
 
-        sdfVAO    = OpenGL::CreateVertexArrayObject(OpenGL::VertexBuffer{ sdfVBO, OpenGL::BufferLayout{ OpenGL::Attribute::Float2 } }, quadIBO);
-        cameraUBO = OpenGL::CreateBuffer(OpenGL::BufferType::UniformBlocks, sizeof(CameraUniforms));
+        const auto layout = {
+            OpenGL::VertexBuffer{ quad.vertexBuffer, { OpenGL::Attribute::Float2, OpenGL::Attribute::Float2 } }
+        };
+        quad.vertexArray = OpenGL::CreateVertexArrayObject(layout, quad.indexBuffer);
 
-        const GLuint cameraBindingPoint = 0;
-        OpenGL::BindUniformBufferToShader(quadShader.Shader, cameraBindingPoint, cameraUBO, "Camera");
-        OpenGL::BindUniformBufferToShader(sdfShader.Shader, cameraBindingPoint, cameraUBO, "Camera");
+        quadShader = OpenGL::CreateShader(std::filesystem::path{ "Assets/shaders/ImmediateRenderer2D/quad.vert" }, std::filesystem::path{ "Assets/shaders/ImmediateRenderer2D/quad.frag" });
+
+        struct SDFVertex
+        {
+            float x, y;
+        };
+
+        constexpr std::array sdf_vertices = {
+            SDFVertex{ -0.5f, -0.5f },
+            SDFVertex{ -0.5f,  0.5f },
+            SDFVertex{  0.5f,  0.5f },
+            SDFVertex{  0.5f, -0.5f }
+        };
+        sdfQuad.vertexBuffer = OpenGL::CreateBuffer(OpenGL::BufferType::Vertices, std::as_bytes(std::span{ sdf_vertices }));
+        sdfQuad.indexBuffer  = quad.indexBuffer;
+
+        const auto sdf_layout = {
+            OpenGL::VertexBuffer{ sdfQuad.vertexBuffer, { OpenGL::Attribute::Float2 } }
+        };
+        sdfQuad.vertexArray = OpenGL::CreateVertexArrayObject(sdf_layout, sdfQuad.indexBuffer);
+
+        sdfShader = OpenGL::CreateShader(std::filesystem::path{ "Assets/shaders/ImmediateRenderer2D/sdf.vert" }, std::filesystem::path{ "Assets/shaders/ImmediateRenderer2D/sdf.frag" });
     }
 
     void ImmediateRenderer2D::Shutdown()
     {
+        GL::DeleteBuffers(1, &quad.vertexBuffer);
+        GL::DeleteBuffers(1, &quad.indexBuffer);
+        GL::DeleteVertexArrays(1, &quad.vertexArray);
         OpenGL::DestroyShader(quadShader);
+        quad = {};
+
+        GL::DeleteBuffers(1, &sdfQuad.vertexBuffer);
+        GL::DeleteVertexArrays(1, &sdfQuad.vertexArray);
         OpenGL::DestroyShader(sdfShader);
-
-        GL::DeleteVertexArrays(1, &quadVAO);
-        GL::DeleteVertexArrays(1, &sdfVAO);
-
-        std::array<BufferHandle, 4> buffers = { quadVBO, quadIBO, sdfVBO, cameraUBO };
-        GL::DeleteBuffers(static_cast<GLsizei>(buffers.size()), buffers.data());
-
-        quadVAO = sdfVAO = quadVBO = quadIBO = sdfVBO = cameraUBO = 0;
+        sdfQuad = {};
     }
 
-    void ImmediateRenderer2D::BeginScene(const Math::TransformationMatrix& view_projection)
+    void ImmediateRenderer2D::BeginScene(const Math::TransformationMatrix& view_projection_matrix)
     {
-        CameraUniforms cameraData;
-        cameraData.u_ViewProjectionMatrix = Renderer2DUtils::to_opengl_mat3(view_projection);
+        view_projection          = view_projection_matrix;
+        const auto to_ndc_opengl = Renderer2DUtils::to_opengl_mat3(view_projection);
 
-        OpenGL::UpdateBufferData(OpenGL::BufferType::UniformBlocks, cameraUBO, std::as_bytes(std::span(&cameraData, 1)));
+        GL::UseProgram(quadShader.Shader);
+        GL::UniformMatrix3fv(quadShader.UniformLocations.at("u_ndc_matrix"), 1, GL_FALSE, to_ndc_opengl.data());
+
+        GL::UseProgram(sdfShader.Shader);
+        GL::UniformMatrix3fv(sdfShader.UniformLocations.at("u_ndc_matrix"), 1, GL_FALSE, to_ndc_opengl.data());
+
+        GL::UseProgram(0);
     }
 
     void ImmediateRenderer2D::EndScene()
@@ -135,25 +120,29 @@ namespace CS200
     void ImmediateRenderer2D::DrawQuad(const Math::TransformationMatrix& transform, OpenGL::TextureHandle texture, Math::vec2 texture_coord_bl, Math::vec2 texture_coord_tr, CS200::RGBA tintColor)
     {
         GL::UseProgram(quadShader.Shader);
-
-        GL::UniformMatrix3fv(quadShader.UniformLocations.at("u_ModelMatrix"), 1, GL_FALSE, Renderer2DUtils::to_opengl_mat3(transform).data());
-
-        auto color = CS200::unpack_color(tintColor);
-        GL::Uniform4fv(quadShader.UniformLocations.at("u_TintColor"), 1, color.data());
-
-        Math::ScaleMatrix          uv_scale(Math::vec2{ texture_coord_tr.x - texture_coord_bl.x, texture_coord_tr.y - texture_coord_bl.y });
-        Math::TranslationMatrix    uv_translate(Math::vec2{ texture_coord_bl.x, texture_coord_bl.y });
-        Math::TransformationMatrix uv_transform = uv_translate * uv_scale;
-        GL::UniformMatrix3fv(quadShader.UniformLocations.at("u_TextureTransform"), 1, GL_FALSE, Renderer2DUtils::to_opengl_mat3(uv_transform).data());
-
-        GL::Uniform1i(quadShader.UniformLocations.at("u_Texture"), 0);
-
-        GL::ActiveTexture(GL_TEXTURE0);
+        GL::BindVertexArray(quad.vertexArray);
         GL::BindTexture(GL_TEXTURE_2D, texture);
 
-        GL::BindVertexArray(quadVAO);
+        const auto& locations    = quadShader.UniformLocations;
+        const auto  model_matrix = Renderer2DUtils::to_opengl_mat3(transform);
+        GL::UniformMatrix3fv(locations.at("u_model_matrix"), 1, GL_FALSE, model_matrix.data());
 
-        GL::DrawElements(GL_TRIANGLES, static_cast<GLsizei>(QuadIndices.size()), GL_UNSIGNED_SHORT, nullptr);
+        Math::TransformationMatrix uv_transform;
+        uv_transform[0][0]   = texture_coord_tr.x - texture_coord_bl.x;
+        uv_transform[1][1]   = texture_coord_tr.y - texture_coord_bl.y;
+        uv_transform[0][2]   = texture_coord_bl.x;
+        uv_transform[1][2]   = texture_coord_bl.y;
+        const auto uv_matrix = Renderer2DUtils::to_opengl_mat3(uv_transform);
+        GL::UniformMatrix3fv(locations.at("u_uv_matrix"), 1, GL_FALSE, uv_matrix.data());
+
+        const auto color = unpack_color(tintColor);
+        GL::Uniform4fv(locations.at("u_tint_color"), 1, color.data());
+
+        GL::DrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, nullptr);
+
+        GL::BindTexture(GL_TEXTURE_2D, 0);
+        GL::BindVertexArray(0);
+        GL::UseProgram(0);
     }
 
     void ImmediateRenderer2D::DrawCircle(const Math::TransformationMatrix& transform, CS200::RGBA fill_color, CS200::RGBA line_color, double line_width)
@@ -180,20 +169,26 @@ namespace CS200
     void ImmediateRenderer2D::DrawSDF(const Math::TransformationMatrix& transform, CS200::RGBA fill_color, CS200::RGBA line_color, double line_width, SDFShape sdf_shape)
     {
         GL::UseProgram(sdfShader.Shader);
+        GL::BindVertexArray(sdfQuad.vertexArray);
 
-        auto sdf_transform = Renderer2DUtils::CalculateSDFTransform(transform, line_width);
-        GL::UniformMatrix3fv(sdfShader.UniformLocations.at("u_ModelMatrix"), 1, GL_FALSE, sdf_transform.QuadTransform.data());
+        const auto& locations = sdfShader.UniformLocations;
 
-        auto fill = CS200::unpack_color(fill_color);
-        GL::Uniform4fv(sdfShader.UniformLocations.at("u_FillColor"), 1, fill.data());
-        auto line = CS200::unpack_color(line_color);
-        GL::Uniform4fv(sdfShader.UniformLocations.at("u_LineColor"), 1, line.data());
-        GL::Uniform1f(sdfShader.UniformLocations.at("u_LineWidth"), static_cast<float>(line_width));
-        GL::Uniform1i(sdfShader.UniformLocations.at("u_ShapeType"), static_cast<int>(sdf_shape));
-        GL::Uniform2fv(sdfShader.UniformLocations.at("u_WorldSize"), 1, sdf_transform.WorldSize.data());
-        GL::Uniform2fv(sdfShader.UniformLocations.at("u_QuadSize"), 1, sdf_transform.QuadSize.data());
+        const auto sdf_transform_info = Renderer2DUtils::CalculateSDFTransform(transform, line_width);
 
-        GL::BindVertexArray(sdfVAO);
-        GL::DrawElements(GL_TRIANGLES, static_cast<GLsizei>(QuadIndices.size()), GL_UNSIGNED_SHORT, nullptr);
+        GL::UniformMatrix3fv(locations.at("u_model_matrix"), 1, GL_FALSE, sdf_transform_info.QuadTransform.data());
+        GL::Uniform2fv(locations.at("u_world_size"), 1, sdf_transform_info.WorldSize.data());
+        GL::Uniform2fv(locations.at("u_quad_size"), 1, sdf_transform_info.QuadSize.data());
+
+        const auto fill = unpack_color(fill_color);
+        const auto line = unpack_color(line_color);
+        GL::Uniform4fv(locations.at("u_fill_color"), 1, fill.data());
+        GL::Uniform4fv(locations.at("u_line_color"), 1, line.data());
+        GL::Uniform1f(locations.at("u_line_width"), static_cast<float>(line_width));
+        GL::Uniform1i(locations.at("u_shape_type"), static_cast<int>(sdf_shape));
+
+        GL::DrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, nullptr);
+
+        GL::BindVertexArray(0);
+        GL::UseProgram(0);
     }
 }

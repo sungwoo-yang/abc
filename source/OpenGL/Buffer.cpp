@@ -20,7 +20,7 @@ namespace OpenGL
         GL::BindBuffer(static_cast<GLenum>(type), handle);
         GL::BufferData(static_cast<GLenum>(type), static_cast<GLsizeiptr>(size_in_bytes), nullptr, GL_DYNAMIC_DRAW);
         GL::BindBuffer(static_cast<GLenum>(type), 0);
-        return 0;
+        return handle;
     }
 
     BufferHandle CreateBuffer(BufferType type, std::span<const std::byte> static_buffer_data) noexcept

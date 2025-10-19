@@ -8,7 +8,7 @@
  * \copyright DigiPen Institute of Technology
  */
 
-layout(location = 0) in vec2 a_position;
+layout (location = 0) in vec2 a_position;
 
 uniform mat3 u_ndc_matrix;
 uniform mat3 u_model_matrix;
