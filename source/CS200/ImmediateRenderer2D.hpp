@@ -1,7 +1,7 @@
 /**
  * \file
  * \author Rudy Castan
- * \author Sungwoo Yang
+ * \author TODO: Your Name
  * \date 2025 Fall
  * \par CS200 Computer Graphics I
  * \copyright DigiPen Institute of Technology

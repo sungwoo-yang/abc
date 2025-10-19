@@ -33,7 +33,6 @@ namespace OpenGL
         verify_framebuffer_complete(fb.Framebuffer);
 
         GL::BindFramebuffer(GL_FRAMEBUFFER, 0);
-
         return fb;
     }
 
@@ -62,7 +61,7 @@ namespace
         if (status_result == GL_FRAMEBUFFER_COMPLETE)
         {
             GL::BindFramebuffer(GL_FRAMEBUFFER, 0);
-            return;
+            return; // Framebuffer is complete and ready to use
         }
 
         std::ostringstream message;

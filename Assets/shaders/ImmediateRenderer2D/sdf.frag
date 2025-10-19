@@ -3,67 +3,56 @@ precision mediump float;
 
 /**
  * \file
- * \author Rudy Castan
+ * \author Sungwoo Yang
  * \date 2025 Fall
  * \par CS200 Computer Graphics I
  * \copyright DigiPen Institute of Technology
  */
 
+in vec2 v_sdf_coord;
 
-in vec2 vTestPoint;
+uniform int u_shape_type;
+uniform vec4 u_fill_color;
+uniform vec4 u_line_color;
+uniform float u_line_width;
+uniform highp vec2 u_world_size;
 
-layout(location = 0) out vec4 FragColor;
+out vec4 frag_color;
 
-uniform vec4 uFillColor;
-uniform vec4 uLineColor;
-uniform vec2 uWorldSize;
-uniform float uLineWidth;
-uniform int uShape;
-
-float sdCircle( vec2 p, float r )
+float circle_sdf(vec2 p)
 {
-    return length(p) - r;
+    return length(p) - 0.5;
 }
 
-float sdRectangle(vec2 point, vec2 half_dim)
+float rectangle_sdf(vec2 p, vec2 half_size)
 {
-    vec2 distance_to_edges = abs(point) - half_dim;
-    float outside_distance = length(max(distance_to_edges, 0.0));
-    float inside_distance = min(max(distance_to_edges.x, distance_to_edges.y), 0.0);
-    float sdf = outside_distance + inside_distance;
-    return sdf;
-}
-
-// evalute the color based off sdf
-vec4 evaluate_color(float sdf)
-{
-    float fill_alpha = (sdf < 0.0) ? 1.0 : 0.0;
-    float outline_alpha = (abs(sdf) < 0.5*uLineWidth) ? 1.0 : 0.0;
-
-    vec4 fill_color = vec4(uFillColor.rgb, fill_alpha * uFillColor.a);
-    vec4 line_color = vec4(uLineColor.rgb, outline_alpha * uLineColor.a);
-
-    if(line_color.a > 0.0)
-        return line_color;
-    return fill_color;
+    vec2 d = abs(p) - half_size;
+    return length(max(d, 0.0)) + min(max(d.x, d.y), 0.0);
 }
 
 void main()
 {
- // based off shape evaluate the sdf
-    float sdf = 0.0;
-    if(uShape == 0)
+    float dist;
+    if (u_shape_type == 0)
     {
-        float radius = min(uWorldSize.x, uWorldSize.y)*0.5;
-        sdf = sdCircle(vTestPoint, radius);
-    }else if(uShape == 1)
-    {
-        sdf = sdRectangle(vTestPoint, 0.5*uWorldSize);
+        dist = circle_sdf(v_sdf_coord);
     }
- // get the color
-    vec4 color = evaluate_color(sdf);
-    if(color.a <= 0.0)
+    else
+    {
+        dist = rectangle_sdf(v_sdf_coord, vec2(0.5));
+    }
+
+    float line_width_in_sdf = u_line_width / max(u_world_size.x, u_world_size.y);
+    float inner_edge = -line_width_in_sdf;
+    
+    float inner_mix = smoothstep(inner_edge, inner_edge + fwidth(dist), dist);
+    vec4 shape_color = mix(u_fill_color, u_line_color, inner_mix);
+
+    float outer_mix = smoothstep(0.0, fwidth(dist), dist);
+    frag_color = mix(shape_color, vec4(0.0), outer_mix);
+
+    if (frag_color.a < 0.01)
+    {
         discard;
- // set color, discard empty space
-    FragColor = color;
+    }
 }

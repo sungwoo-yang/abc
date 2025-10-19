@@ -8,20 +8,18 @@
  * \copyright DigiPen Institute of Technology
  */
 
-layout(location = 0) in vec3 a_Position;
-layout(location = 1) in vec2 a_TexCoord;
+layout (location = 0) in vec2 a_position;
+layout (location = 1) in vec2 a_tex_coord;
 
-out vec2 v_TexCoord;
-
+uniform mat3 u_ndc_matrix;
 uniform mat3 u_model_matrix;
+uniform mat3 u_uv_matrix;
 
-uniform Camera
-{
-    mat3 u_ndc_matrix;
-} u_Camera;
+out vec2 v_uv;
 
 void main()
 {
-    gl_Position = vec4(u_Camera.u_ndc_matrix * u_model_matrix * vec3(a_Position.xy, 1.0), 1.0);
-    v_TexCoord = a_TexCoord;
+    v_uv = (u_uv_matrix * vec3(a_tex_coord, 1.0)).xy;
+    vec3 ndc_pos = u_ndc_matrix * u_model_matrix * vec3(a_position, 1.0);
+    gl_Position = vec4(ndc_pos.xy, 0.0, 1.0);
 }

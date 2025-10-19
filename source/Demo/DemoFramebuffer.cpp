@@ -13,7 +13,7 @@
 #include "CS200/NDC.hpp"
 #include "CS200/RenderingAPI.hpp"
 #include "DemoShapes.hpp"
-#include "DemoText.hpp"
+// #include "DemoText.hpp"
 #include "Engine/Engine.hpp"
 #include "Engine/GameStateManager.hpp"
 #include "Engine/Matrix.hpp"
@@ -235,11 +235,11 @@ void DemoFramebuffer::DrawImGui()
             Engine::GetGameStateManager().PopState();
             Engine::GetGameStateManager().PushState<DemoShapes>();
         }
-        if (ImGui::Button("Switch to Demo Text"))
-        {
-            Engine::GetGameStateManager().PopState();
-            Engine::GetGameStateManager().PushState<DemoText>();
-        }
+        // if (ImGui::Button("Switch to Demo Text"))
+        // {
+        //     Engine::GetGameStateManager().PopState();
+        //     Engine::GetGameStateManager().PushState<DemoText>();
+        // }
     }
     ImGui::End();
 }

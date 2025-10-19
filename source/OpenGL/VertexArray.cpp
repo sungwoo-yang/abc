@@ -100,4 +100,5 @@ namespace OpenGL
     {
         return CreateVertexArrayObject({ vertices }, index_buffer);
     }
+
 }

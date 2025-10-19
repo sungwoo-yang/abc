@@ -13,6 +13,7 @@
 #include "Engine/Logger.hpp"
 #include "OpenGL/Environment.hpp"
 #include "OpenGL/GL.hpp"
+#include <GL/glew.h>
 #include <cassert>
 
 namespace
@@ -70,7 +71,6 @@ namespace CS200::RenderingAPI
         GL::Disable(GL_DEPTH_TEST);
 
         auto& logger = Engine::GetLogger();
-
         logger.LogDebug("---------- OpenGL Setting ----------");
 
         const auto get_string = [](GLenum name)

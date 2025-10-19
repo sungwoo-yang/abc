@@ -13,7 +13,7 @@
 #include "CS200/RGBA.hpp"
 #include "CS200/RenderingAPI.hpp"
 #include "DemoFramebuffer.hpp"
-#include "DemoText.hpp"
+// #include "DemoText.hpp"
 #include "Engine/Engine.hpp"
 #include "Engine/GameStateManager.hpp"
 #include "Engine/Input.hpp"
@@ -54,11 +54,11 @@ void DemoShapes::Load()
 {
     CS200::RenderingAPI::SetClearColor(0x252525FF);
 
-    targetShapePosition     = shapePosition;
-    targetShapeRotation     = 0.0;
-    targetShapeScale        = { 100.0, 100.0 };
-    currentFillColor        = CS200::unpack_color(fillColor);
-    currentLineColor        = CS200::unpack_color(lineColor);
+    targetShapePosition = shapePosition;
+    targetShapeRotation = 0.0;
+    targetShapeScale    = { 100.0, 100.0 };
+    currentFillColor    = CS200::unpack_color(fillColor);
+    currentLineColor    = CS200::unpack_color(lineColor);
 }
 
 template <typename T, typename FLOAT = double>
@@ -210,11 +210,11 @@ void DemoShapes::DrawImGui()
             Engine::GetGameStateManager().PopState();
             Engine::GetGameStateManager().PushState<DemoFramebuffer>();
         }
-        if (ImGui::Button("Switch to Demo Text"))
-        {
-            Engine::GetGameStateManager().PopState();
-            Engine::GetGameStateManager().PushState<DemoText>();
-        }
+        // if (ImGui::Button("Switch to Demo Text"))
+        // {
+        //     Engine::GetGameStateManager().PopState();
+        //     Engine::GetGameStateManager().PushState<DemoText>();
+        // }
     }
     ImGui::End();
 }

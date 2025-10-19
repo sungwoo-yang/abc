@@ -9,6 +9,7 @@
  */
 
 #pragma once
+#include "CS200/Image.hpp"
 #include "Rect.hpp"
 #include "Texture.hpp"
 #include "Vec2.hpp"
@@ -142,10 +143,20 @@ namespace CS230
         std::shared_ptr<Texture> PrintToTexture(const std::string& text, CS200::RGBA color = 0xFFFFFFFF);
 
     private:
+        void         FindCharRects();
+        Math::irect& GetCharRect(char c);
+        Math::ivec2  MeasureText(const std::string& text);
+        void         DrawChar(Math::TransformationMatrix& matrix, char c, CS200::RGBA color);
+        CS200::RGBA  GetPixel(Math::ivec2 texel) const;
+        void         CleanupCache();
 
-        Math::ivec2 MeasureText(const std::string& text) const;
+        CS200::Image             original_image;
+        std::shared_ptr<Texture> texture_ptr;
+        static constexpr int     num_chars = 'z' - ' ' + 1;
+        Math::irect              char_rects[num_chars];
 
-        std::shared_ptr<Texture>              fontTexture;
-        std::unordered_map<char, Math::irect> characterRects;
+        std::unordered_map<std::string, std::shared_ptr<Texture>> text_cache;
+        std::unordered_map<std::string, uint64_t>                 cache_timestamps;
+        static constexpr uint64_t                                 CACHE_CLEANUP_INTERVAL = 300;
     };
 }
