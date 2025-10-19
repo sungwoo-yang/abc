@@ -37,6 +37,11 @@ namespace CS230
         void LogVerbose(std::string text);
 
     private:
-        // TODO add private fields and helper member functions here
+        void                                  log(Severity severity, std::string message);
+        double                                seconds_since_start() const;
+        Severity                              min_level;
+        std::chrono::system_clock::time_point start_time;
+        std::ofstream                         out_stream;
+        bool                                  mirror_to_console;
     };
 }

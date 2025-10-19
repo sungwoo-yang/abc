@@ -18,9 +18,15 @@ namespace Math
     public:
         TransformationMatrix();
 
-        constexpr double* operator[](int index); // TODO
+        constexpr double* operator[](int index)
+        {
+            return matrix[index];
+        }
 
-        constexpr const double* operator[](int index) const; // TODO
+        constexpr const double* operator[](int index) const
+        {
+            return matrix[index];
+        }
 
         TransformationMatrix  operator*(TransformationMatrix m) const;
         TransformationMatrix& operator*=(TransformationMatrix m);
