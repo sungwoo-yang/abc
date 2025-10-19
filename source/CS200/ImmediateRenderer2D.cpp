@@ -49,6 +49,7 @@ namespace CS200
         struct CameraUniforms
         {
             Renderer2DUtils::mat3 u_ViewProjectionMatrix;
+            float                 padding[3];
         };
     }
 

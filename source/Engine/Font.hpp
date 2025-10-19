@@ -142,7 +142,16 @@ namespace CS230
         std::shared_ptr<Texture> PrintToTexture(const std::string& text, CS200::RGBA color = 0xFFFFFFFF);
 
     private:
-        // TODO: Add private helper methods as needed
-        // TODO: Add private member variables as needed
+        struct CachedText
+        {
+            std::shared_ptr<Texture> texture;
+            uint64_t                 lastUsedFrame = 0;
+        };
+
+        std::shared_ptr<Texture>                    fontTexture;
+        std::unordered_map<char, Math::irect>       glyphs;
+        int                                         fontHeight = 0;
+        std::unordered_map<std::string, CachedText> textCache;
+        void                                        DoCacheCleanup();
     };
 }

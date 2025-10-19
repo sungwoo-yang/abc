@@ -9,54 +9,50 @@ precision mediump float;
  * \copyright DigiPen Institute of Technology
  */
 
-in vec2 v_TexCoord;
+in vec2 v_sdf_coord;
 
-out vec4 o_FragColor;
+uniform int u_shape_type;
+uniform vec4 u_fill_color;
+uniform vec4 u_line_color;
+uniform float u_line_width;
+uniform highp vec2 u_world_size;
 
-uniform vec4  u_FillColor;
-uniform vec4  u_LineColor;
-uniform float u_LineWidth;
-uniform int   u_ShapeType;
-uniform vec2  u_WorldSize;
-uniform vec2  u_QuadSize;
+out vec4 frag_color;
 
-float sd_Circle(vec2 p, float r)
+float circle_sdf(vec2 p)
 {
-    return length(p) - r;
+    return length(p) - 0.5;
 }
 
-float sd_Rectangle(vec2 p, vec2 b)
+float rectangle_sdf(vec2 p, vec2 half_size)
 {
-    vec2 d = abs(p) - b;
-    return length(max(d, 0.0));
+    vec2 d = abs(p) - half_size;
+    return length(max(d, 0.0)) + min(max(d.x, d.y), 0.0);
 }
-
 
 void main()
 {
-    vec2 uv_ratio = u_WorldSize / u_QuadSize;
+    float dist;
+    if (u_shape_type == 0)
+    {
+        dist = circle_sdf(v_sdf_coord);
+    }
+    else
+    {
+        dist = rectangle_sdf(v_sdf_coord, vec2(0.5));
+    }
 
-    if (uv_ratio.x == 0.0) uv_ratio.x = 0.0001;
-    if (uv_ratio.y == 0.0) uv_ratio.y = 0.0001;
+    float line_width_in_sdf = u_line_width / max(u_world_size.x, u_world_size.y);
+    float inner_edge = -line_width_in_sdf;
     
-    vec2 shape_uv = v_TexCoord / uv_ratio;
+    float inner_mix = smoothstep(inner_edge, inner_edge + fwidth(dist), dist);
+    vec4 shape_color = mix(u_fill_color, u_line_color, inner_mix);
 
-    float dist_circle = sd_Circle(shape_uv, 0.5);
-    float dist_rect = sd_Rectangle(shape_uv, vec2(0.5));
-    
-    float d = mix(dist_circle, dist_rect, float(u_ShapeType));
-    
-    float line_width_uv = u_LineWidth / max(u_WorldSize.x, u_WorldSize.y);
+    float outer_mix = smoothstep(0.0, fwidth(dist), dist);
+    frag_color = mix(shape_color, vec4(0.0), outer_mix);
 
-    float aa = fwidth(d);
-
-    float fill_alpha = smoothstep(aa, -aa, d);
-
-    float line_alpha = smoothstep(line_width_uv + aa, line_width_uv - aa, d);
-
-    vec4 color = mix(u_LineColor, u_FillColor, fill_alpha);
-
-    color.a *= line_alpha;
-    
-    o_FragColor = color;
+    if (frag_color.a < 0.01)
+    {
+        discard;
+    }
 }
