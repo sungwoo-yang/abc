@@ -19,112 +19,126 @@
 
 namespace CS230
 {
+    namespace
+    {
+        struct CachedText
+        {
+            std::shared_ptr<Texture> texture;
+            uint64_t                 last_frame_used = 0;
+        };
+
+        static std::unordered_map<std::string, CachedText> text_cache;
+        static uint64_t                                    last_cleanup_frame = 0;
+    }
+
     Font::Font(const std::filesystem::path& file_name)
     {
-        fontTexture = Engine::GetTextureManager().Load(file_name);
         CS200::Image image(file_name, false);
-        if (image.GetSize().x == 0 || image.GetSize().y == 0)
-            throw_error_message("Failed to load font image: " + file_name.string());
-
-        const int width      = image.GetSize().x;
-        const int height     = image.GetSize().y;
-        const int char_width = width / num_chars;
-
-        for (int i = 0; i < num_chars; ++i)
+        if (image.GetSize().x == 0 || image.GetSize().y == 0 || image.data()[0] != 0xFFFFFFFF)
         {
-            char_rects[i].point_1 = { i * char_width, height };
-            char_rects[i].point_2 = { (i + 1) * char_width, 0 };
+            throw_error_message("Invalid font file format: " + file_name.string());
         }
+
+        fontTexture = Engine::GetTextureManager().Load(file_name);
+
+        int         last_x_pos   = 1;
+        CS200::RGBA last_color   = image.data()[0];
+        char        current_char = ' ';
+
+        for (int x = 1; x < image.GetSize().x; ++x)
+        {
+            if (image.data()[x] != last_color)
+            {
+                characterRects[current_char] = Math::irect{
+                    { last_x_pos,                 0 },
+                    {          x, image.GetSize().y }
+                };
+                last_x_pos = x;
+                last_color = image.data()[x];
+                current_char++;
+            }
+        }
+        characterRects[current_char] = Math::irect{
+            {        last_x_pos,                 0 },
+            { image.GetSize().x, image.GetSize().y }
+        };
+    }
+
+    Math::ivec2 Font::MeasureText(const std::string& text) const
+    {
+        int total_width = 0;
+        int max_height  = 0;
+        for (const char c : text)
+        {
+            if (characterRects.count(c))
+            {
+                const auto& rect = characterRects.at(c);
+                total_width += static_cast<int>(rect.Size().x);
+                if (static_cast<int>(rect.Size().y) > max_height)
+                {
+                    max_height = static_cast<int>(rect.Size().y);
+                }
+            }
+        }
+        return { total_width, max_height };
     }
 
     std::shared_ptr<Texture> Font::PrintToTexture(const std::string& text, CS200::RGBA color)
     {
-        if (text.empty())
-            return nullptr;
-
-        CleanCache();
-
-        std::stringstream ss;
-        ss << text << "_" << std::hex << color;
-        const std::string key = ss.str();
-
-        if (auto it = textureCache.find(key); it != textureCache.end())
-        {
-            it->second.last_used_frame = Engine::GetWindowEnvironment().FrameCount;
-            return it->second.texture;
-        }
-
-        const Math::ivec2 size = MeasureText(text);
-        if (size.x <= 0 || size.y <= 0)
-            return nullptr;
-
-        TextureManager::StartRenderTextureMode(size.x, size.y);
-
-        float cursor_x = 0.0f;
-        for (char c : text)
-        {
-            if (c < first_char || c > last_char)
-                continue;
-
-            const Math::irect& rect      = char_rects[c - first_char];
-            const Math::ivec2  texel_pos = { rect.point_1.x, rect.point_2.y };
-            const Math::ivec2  char_size = { static_cast<int>(rect.Size().x), static_cast<int>(rect.Size().y) };
-
-            const float half_w = static_cast<float>(char_size.x) * 0.5f;
-            const float half_h = static_cast<float>(char_size.y) * 0.5f;
-
-            const auto to_center = Math::TranslationMatrix(Math::vec2(-half_w, -half_h));
-            const auto y_flip    = Math::ScaleMatrix(Math::vec2{ 1.0f, -1.0f });
-            const auto to_bottom = Math::TranslationMatrix(Math::vec2(half_w, half_h));
-            const auto flip_quad = to_bottom * y_flip * to_center;
-
-            const auto place = Math::TranslationMatrix(Math::vec2(cursor_x + half_w, half_h));
-
-            fontTexture->Draw(place * flip_quad, texel_pos, char_size, color);
-            cursor_x += static_cast<float>(char_size.x);
-        }
-
-        auto new_tex = TextureManager::EndRenderTextureMode();
-        if (new_tex)
-        {
-            textureCache[key] = { new_tex, Engine::GetWindowEnvironment().FrameCount };
-        }
-
-        return new_tex;
-    }
-
-    Math::ivec2 Font::MeasureText(const std::string& text)
-    {
-        if (text.empty())
-            return { 0, 0 };
-
-        int total_w = 0;
-        int max_h   = 0;
-
-        for (char c : text)
-        {
-            if (c < first_char || c > last_char)
-                continue;
-
-            const Math::irect& rect = char_rects[c - first_char];
-            total_w += static_cast<int>(rect.Size().x);
-            max_h = std::max(max_h, static_cast<int>(rect.Size().y));
-        }
-
-        return { total_w, max_h };
-    }
-
-    void Font::CleanCache()
-    {
         const uint64_t current_frame = Engine::GetWindowEnvironment().FrameCount;
-        for (auto it = textureCache.begin(); it != textureCache.end();)
+        if (current_frame > last_cleanup_frame)
         {
-            if (it->second.texture.use_count() <= 1 && current_frame > it->second.last_used_frame + 60)
+            last_cleanup_frame = current_frame;
+            for (auto it = text_cache.begin(); it != text_cache.end();)
             {
-                it = textureCache.erase(it);
+                if (it->second.texture.use_count() == 1 && (current_frame - it->second.last_frame_used) > 60)
+                {
+                    it = text_cache.erase(it);
+                }
+                else
+                {
+                    ++it;
+                }
             }
-            else
-                ++it;
         }
+
+        const std::string cache_key = text + std::to_string(color);
+        if (text_cache.count(cache_key))
+        {
+            text_cache[cache_key].last_frame_used = current_frame;
+            return text_cache[cache_key].texture;
+        }
+
+        const Math::ivec2 text_size = MeasureText(text);
+        if (text_size.x == 0 || text_size.y == 0)
+        {
+            return nullptr;
+        }
+
+        TextureManager::StartRenderTextureMode(text_size.x, text_size.y);
+
+        int current_x = 0;
+        for (const char c : text)
+        {
+            if (characterRects.count(c))
+            {
+                const Math::irect& char_rect      = characterRects.at(c);
+                const int          char_width     = static_cast<int>(char_rect.Size().x);
+                const int          char_height    = static_cast<int>(char_rect.Size().y);
+                const Math::ivec2  texel_position = { static_cast<int>(char_rect.Left()), static_cast<int>(char_rect.Top()) };
+
+                Math::TransformationMatrix transform = Math::TranslationMatrix(Math::vec2{ static_cast<double>(current_x), 0.0 });
+                fontTexture->Draw(transform, texel_position, { char_width, char_height });
+
+                current_x += char_width;
+            }
+        }
+
+        auto new_texture = TextureManager::EndRenderTextureMode();
+        if (new_texture)
+        {
+            text_cache[cache_key] = { new_texture, current_frame };
+        }
+        return new_texture;
     }
 }

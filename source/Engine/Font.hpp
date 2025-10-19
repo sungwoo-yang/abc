@@ -142,21 +142,10 @@ namespace CS230
         std::shared_ptr<Texture> PrintToTexture(const std::string& text, CS200::RGBA color = 0xFFFFFFFF);
 
     private:
-        Math::ivec2 MeasureText(const std::string& text);
-        void        CleanCache();
 
-        std::shared_ptr<Texture> fontTexture;
-        static constexpr int     first_char = 32;
-        static constexpr int     last_char  = 126;
-        static constexpr int     num_chars  = last_char - first_char + 1;
-        Math::irect              char_rects[num_chars];
+        Math::ivec2 MeasureText(const std::string& text) const;
 
-        struct CachedTexture
-        {
-            std::shared_ptr<Texture> texture;
-            uint64_t                 last_used_frame = 0;
-        };
-
-        std::unordered_map<std::string, CachedTexture> textureCache;
+        std::shared_ptr<Texture>              fontTexture;
+        std::unordered_map<char, Math::irect> characterRects;
     };
 }

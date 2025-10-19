@@ -67,6 +67,6 @@ namespace CS200
         const Math::vec2              tv = { -1.0, -1.0 };
         const Math::TranslationMatrix translate_matrix(tv);
 
-        return Math::TransformationMatrix{};
+        return translate_matrix * scale_matrix;
     }
 }

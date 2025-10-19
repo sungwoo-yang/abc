@@ -20,80 +20,73 @@
 
 std::shared_ptr<CS230::Texture> CS230::TextureManager::Load(const std::filesystem::path& file_name)
 {
-    auto it = textures.find(file_name);
-    if (it != textures.end())
+    const std::string path_string = file_name.string();
+    if (textures.count(path_string))
     {
-        return it->second;
+        return textures.at(path_string);
     }
 
-    Engine::GetLogger().LogVerbose("Loading new texture: " + file_name.string());
-    std::shared_ptr<Texture> new_texture(new Texture(file_name));
-
-    textures[file_name] = new_texture;
+    auto new_texture      = std::shared_ptr<Texture>(new Texture(file_name));
+    textures[path_string] = new_texture;
+    Engine::GetLogger().LogDebug("Loading Texture: " + path_string);
     return new_texture;
 }
 
 void CS230::TextureManager::Unload()
 {
     textures.clear();
-    Engine::GetLogger().LogEvent("TextureManager: All cached textures unloaded.");
+    Engine::GetLogger().LogEvent("Clearing Textures");
 }
 
 namespace
 {
-    struct RenderToTextureState
+    struct RenderState
     {
-        OpenGL::FramebufferWithColor Target{};
-        Math::ivec2                  Size{};
-        std::array<GLfloat, 4>       ClearColor{};
-        std::array<GLint, 4>         Viewport{};
+        OpenGL::FramebufferWithColor framebuffer{};
+        Math::ivec2                  size{};
+        std::array<GLfloat, 4>       clearColor{};
+        std::array<GLint, 4>         viewport{};
     };
 
-    RenderToTextureState g_CurrentRenderState;
+    RenderState savedState;
 }
 
 void CS230::TextureManager::StartRenderTextureMode(int width, int height)
 {
-    auto& renderer_2d = Engine::GetRenderer2D();
+    auto& renderer = Engine::GetRenderer2D();
+    renderer.EndScene();
 
-    renderer_2d.EndScene();
+    savedState.framebuffer = OpenGL::CreateFramebufferWithColor({ width, height });
+    GL::GetFloatv(GL_COLOR_CLEAR_VALUE, savedState.clearColor.data());
+    GL::GetIntegerv(GL_VIEWPORT, savedState.viewport.data());
 
-    g_CurrentRenderState.Size   = { width, height };
-    g_CurrentRenderState.Target = OpenGL::CreateFramebufferWithColor(g_CurrentRenderState.Size);
-
-    GL::GetFloatv(GL_COLOR_CLEAR_VALUE, g_CurrentRenderState.ClearColor.data());
-    GL::GetIntegerv(GL_VIEWPORT, g_CurrentRenderState.Viewport.data());
-
-    GL::BindFramebuffer(GL_FRAMEBUFFER, g_CurrentRenderState.Target.Framebuffer);
+    GL::BindFramebuffer(GL_FRAMEBUFFER, savedState.framebuffer.Framebuffer);
     GL::Viewport(0, 0, width, height);
-    GL::ClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    GL::ClearColor(0.f, 0.f, 0.f, 0.f);
     GL::Clear(GL_COLOR_BUFFER_BIT);
 
-    const auto ndc_matrix = Math::ScaleMatrix({ 1.0, -1.0 }) * CS200::build_ndc_matrix(g_CurrentRenderState.Size);
-    renderer_2d.BeginScene(ndc_matrix);
+    Math::TransformationMatrix ndc_matrix = CS200::build_ndc_matrix({ width, height });
+    ndc_matrix[1][1] *= -1.0;
+    renderer.BeginScene(ndc_matrix);
 }
 
 std::shared_ptr<CS230::Texture> CS230::TextureManager::EndRenderTextureMode()
 {
-    auto& renderer_2d = Engine::GetRenderer2D();
-
-    renderer_2d.EndScene();
+    auto& renderer = Engine::GetRenderer2D();
+    renderer.EndScene();
 
     GL::BindFramebuffer(GL_FRAMEBUFFER, 0);
+    GL::Viewport(savedState.viewport[0], savedState.viewport[1], savedState.viewport[2], savedState.viewport[3]);
+    GL::ClearColor(savedState.clearColor[0], savedState.clearColor[1], savedState.clearColor[2], savedState.clearColor[3]);
 
-    GL::Viewport(g_CurrentRenderState.Viewport[0], g_CurrentRenderState.Viewport[1], g_CurrentRenderState.Viewport[2], g_CurrentRenderState.Viewport[3]);
-    GL::ClearColor(g_CurrentRenderState.ClearColor[0], g_CurrentRenderState.ClearColor[1], g_CurrentRenderState.ClearColor[2], g_CurrentRenderState.ClearColor[3]);
+    auto new_texture = std::make_shared<Texture>(savedState.framebuffer.ColorAttachment, savedState.size);
 
-    OpenGL::TextureHandle     texture_handle = g_CurrentRenderState.Target.ColorAttachment;
-    OpenGL::FramebufferHandle fbo_handle     = g_CurrentRenderState.Target.Framebuffer;
+    auto temp_fbo                          = savedState.framebuffer.Framebuffer;
+    savedState.framebuffer.ColorAttachment = 0;
+    savedState.framebuffer.Framebuffer     = 0;
+    GL::DeleteFramebuffers(1, &temp_fbo);
 
-    GL::DeleteFramebuffers(1, &fbo_handle);
+    renderer.BeginScene(CS200::build_ndc_matrix({ savedState.viewport[2], savedState.viewport[3] }));
 
-    std::shared_ptr<Texture> texture(new Texture(texture_handle, g_CurrentRenderState.Size));
-
-    const auto& env         = Engine::GetWindowEnvironment();
-    Math::ivec2 window_size = { static_cast<int>(env.DisplaySize.x), static_cast<int>(env.DisplaySize.y) };
-    renderer_2d.BeginScene(CS200::build_ndc_matrix(window_size));
-
-    return texture;
+    return new_texture;
 }
