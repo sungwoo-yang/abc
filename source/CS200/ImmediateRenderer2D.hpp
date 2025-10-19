@@ -280,8 +280,18 @@ namespace CS200
         void DrawSDF(const Math::TransformationMatrix& transform, CS200::RGBA fill_color, CS200::RGBA line_color, double line_width, SDFShape sdf_shape);
 
     private:
-        // TODO Add private member variables for Texrured Quad related OpenGL handles and resources
+        using VertexArrayHandle = OpenGL::VertexArrayHandle;
+        using BufferHandle      = OpenGL::BufferHandle;
 
-        // TODO: Add private member variables for SDF related OpenGL handles and resources
+        BufferHandle cameraUBO = 0;
+
+        OpenGL::CompiledShader quadShader{};
+        VertexArrayHandle      quadVAO = 0;
+        BufferHandle           quadVBO = 0;
+        BufferHandle           quadIBO = 0;
+
+        OpenGL::CompiledShader sdfShader{};
+        VertexArrayHandle      sdfVAO = 0;
+        BufferHandle           sdfVBO = 0;
     };
 }
