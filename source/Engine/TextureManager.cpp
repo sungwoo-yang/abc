@@ -2,7 +2,7 @@
  * \file
  * \author Rudy Castan
  * \author Jonathan Holmes
- * \author TODO: Your Name
+ * \author Sungwoo Yang
  * \date 2025 Fall
  * \par CS200 Computer Graphics I
  * \copyright DigiPen Institute of Technology
@@ -68,7 +68,6 @@ void CS230::TextureManager::StartRenderTextureMode(int width, int height)
     GL::Clear(GL_COLOR_BUFFER_BIT);
 
     Math::TransformationMatrix ndc_matrix = CS200::build_ndc_matrix({ width, height });
-    ndc_matrix[1][1] *= -1.0;
     renderer.BeginScene(ndc_matrix);
 }
 
