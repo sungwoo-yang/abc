@@ -13,14 +13,14 @@ Created:    March 20, 2025
 #include "Engine/Camera.hpp"
 #include "Engine/Matrix.hpp"
 #include "Engine/GameObject.hpp"
-#include "Engine/Timer.hpp"
+#include "Engine/CountdownTimer.hpp"
 #include "Engine/GameObjectTypes.hpp"
 
 class Cat : public CS230::GameObject {
 public:
     Cat(Math::vec2 start_position, GameObject* starting_floor);
     void Update(double dt) override;
-    void Draw(Math::TransformationMatrix& camera_matrix) override;
+    void Draw(const Math::TransformationMatrix& camera_matrix) override;
     const Math::vec2& GetPosition() const { return GameObject::GetPosition(); };
     GameObjectTypes Type() override { return GameObjectTypes::Cat; };
     std::string TypeName() override { return "Cat"; }
@@ -38,9 +38,9 @@ private:
     static constexpr double bounce_velocity = 700;
     static constexpr double pop_velocity = 400;
     static constexpr double LargeFallHeight = 250;
-    double fall_start_y;
-    CS230::Timer* hurt_timer = nullptr;
     GameObject* standing_on;
+    CS230::CountdownTimer* hurt_timer = nullptr;
+    double fall_start_y;
 
     void update_x_velocity(double dt);
 

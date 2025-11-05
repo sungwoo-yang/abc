@@ -13,7 +13,7 @@
 #include "GameObject.hpp"
 #include "Logger.hpp"
 
-CS230::RectCollision::RectCollision(Math::irect boundary, GameObject* object) : boundary(boundary), object(object)
+CS230::RectCollision::RectCollision(Math::irect bound, GameObject* obj) : boundary(bound), object(obj)
 {
 }
 
@@ -75,7 +75,7 @@ bool CS230::RectCollision::IsCollidingWith(Math::vec2 point)
     return (point.x >= rect.Left() && point.x < rect.Right() && point.y >= rect.Bottom() && point.y <= rect.Top());
 }
 
-CS230::CircleCollision::CircleCollision(double radius, GameObject* object) : radius(radius), object(object)
+CS230::CircleCollision::CircleCollision(double rad, GameObject* obj) : radius(rad), object(obj)
 {
 }
 

@@ -36,7 +36,7 @@ namespace CS230
     class RectCollision : public Collision
     {
     public:
-        RectCollision(Math::irect boundary, GameObject* object);
+        RectCollision(Math::irect bound, GameObject* obj);
 
         CollisionShape Shape() override
         {
@@ -49,14 +49,14 @@ namespace CS230
         virtual bool IsCollidingWith(Math::vec2 point) override;
 
     private:
-        GameObject* object;
         Math::irect boundary;
+        GameObject* object;
     };
 
     class CircleCollision : public Collision
     {
     public:
-        CircleCollision(double radius, GameObject* object);
+        CircleCollision(double rad, GameObject* obj);
 
         CollisionShape Shape() override
         {
@@ -69,7 +69,7 @@ namespace CS230
         virtual bool IsCollidingWith(Math::vec2 point) override;
 
     private:
-        GameObject* object;
         double      radius;
+        GameObject* object;
     };
 }

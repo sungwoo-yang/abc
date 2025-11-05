@@ -12,6 +12,7 @@
 #include "CS200/NDC.hpp"
 #include "CS200/RenderingAPI.hpp"
 #include "FPS.hpp"
+#include "Font.hpp"
 #include "GameState.hpp"
 #include "GameStateManager.hpp"
 #include "Input.hpp"
@@ -48,6 +49,7 @@ public:
     CS230::GameStateManager    gameStateManager{};
     CS200::ImmediateRenderer2D renderer2D{};
     CS230::TextureManager      textureManager{};
+    std::vector<std::unique_ptr<CS230::Font>> fonts;
 };
 
 Engine& Engine::Instance()
@@ -91,6 +93,16 @@ CS230::TextureManager& Engine::GetTextureManager()
     return Instance().impl->textureManager;
 }
 
+CS230::Font& Engine::GetFont(int index)
+{
+    return *Instance().impl->fonts.at(static_cast<size_t>(index));
+}
+
+void Engine::AddFont(const std::filesystem::path& file_name)
+{
+    impl->fonts.push_back(std::make_unique<CS230::Font>(file_name));
+}
+
 void Engine::Start(std::string_view window_title)
 {
     impl->logger.LogEvent("Engine Started");
@@ -124,7 +136,8 @@ void Engine::Update()
     impl->window.Update();
     impl->input.Update();
     auto& state_manager = impl->gameStateManager;
-    state_manager.Update();
+    // state_manager.Update();
+    state_manager.Update(impl->environment.DeltaTime);
     const auto        viewport      = impl->viewport;
     const Math::ivec2 viewport_size = { viewport.width, viewport.height };
     CS200::RenderingAPI::SetViewport(viewport_size, { viewport.x, viewport.y });

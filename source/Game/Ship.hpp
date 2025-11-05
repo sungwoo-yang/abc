@@ -20,7 +20,7 @@ class Ship : public CS230::GameObject {
 public:
 	Ship(Math::vec2 start_position);
 	void Update(double dt) override;
-	void Draw(Math::TransformationMatrix& camera_matrix) override;
+	void Draw(const Math::TransformationMatrix& camera_matrix) override;
 	bool Exploded() const { return exploded; }
 	GameObjectTypes Type() override { return GameObjectTypes::Ship; }
 	std::string TypeName() override { return "Ship"; }

@@ -14,7 +14,7 @@ Created:    April 22, 2025
 
 class Crates : public CS230::GameObject {
 public:
-    Crates(Math::vec2 position, int size);
+    Crates(Math::vec2 pos, int sz);
     GameObjectTypes Type() override { return GameObjectTypes::Crates; }
     std::string TypeName() override { return "Crates"; }
 };

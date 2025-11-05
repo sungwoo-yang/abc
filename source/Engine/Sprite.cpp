@@ -61,7 +61,7 @@ namespace CS230
 
     void Sprite::Update(double dt)
     {
-        animations[current_animation]->Update(dt);
+        animations[static_cast<size_t>(current_animation)]->Update(dt);
     }
 
     void Sprite::Load(const std::filesystem::path& sprite_file)
@@ -171,18 +171,18 @@ namespace CS230
 
     void Sprite::Draw(Math::TransformationMatrix display_matrix)
     {
-        texture->Draw(display_matrix * Math::TranslationMatrix(-GetHotSpot(0)), GetFrameTexel(animations[current_animation]->CurrentFrame()), GetFrameSize());
+        texture->Draw(display_matrix * Math::TranslationMatrix(-GetHotSpot(0)), GetFrameTexel(animations[static_cast<size_t>(current_animation)]->CurrentFrame()), GetFrameSize());
     }
 
     Math::ivec2 Sprite::GetHotSpot(int index)
     {
-        if (index < 0 && index >= hotspots.size())
+        if (index < 0 && index >= static_cast<int>(hotspots.size()))
         {
             return { 0, 0 };
         }
         else
         {
-            return hotspots[index];
+            return hotspots[static_cast<size_t>(index)];
         }
     }
 
@@ -196,7 +196,7 @@ namespace CS230
         if (animation >= 0 && animation < static_cast<int>(animations.size()))
         {
             current_animation = animation;
-            animations[current_animation]->Reset();
+            animations[static_cast<size_t>(current_animation)]->Reset();
         }
         else
         {
@@ -207,7 +207,7 @@ namespace CS230
 
     bool Sprite::AnimationEnded()
     {
-        return animations[current_animation]->Ended();
+        return animations[static_cast<size_t>(current_animation)]->Ended();
     }
 
     Math::ivec2 Sprite::GetFrameTexel(int index) const
@@ -217,7 +217,7 @@ namespace CS230
             Engine::GetLogger().LogError("Invalid frame index");
             return { 0, 0 };
         }
-        return frame_texels[index];
+        return frame_texels[static_cast<size_t>(index)];
     }
 
     int Sprite::CurrentAnimation() const

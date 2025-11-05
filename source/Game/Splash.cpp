@@ -8,36 +8,46 @@ Author:     Sungwoo Yang
 Created:    March 11, 2025
 */
 
-#include "Engine/Engine.hpp"
-#include "States.hpp"
 #include "Splash.hpp"
+#include "Engine/Engine.hpp"
+#include "Engine/GameStateManager.hpp"
+#include "Engine/Logger.hpp"
+#include "Engine/TextureManager.hpp"
+#include "Mainmenu.hpp"
+#include "States.hpp"
+#include "Engine/Window.hpp"
+#include <limits.h>
 
-
-
-Splash::Splash() {
-
+Splash::Splash()
+{
 }
 
-void Splash::Load() {
+void Splash::Load()
+{
     counter = 0;
     texture = Engine::GetTextureManager().Load("Assets/DigiPen.png");
 }
 
-void Splash::Update(double dt) {
+void Splash::Update(double dt)
+{
     counter += dt;
     Engine::GetLogger().LogDebug(std::to_string(counter));
-    if (counter >= 3) {
-        Engine::GetGameStateManager().SetNextGameState(static_cast<int>(States::MainMenu));
+    if (counter >= 3)
+    {
+        Engine::GetGameStateManager().PopState();
+        Engine::GetGameStateManager().PushState<MainMenu>();
     }
 }
 
-void Splash::Unload() {
-
+void Splash::Unload()
+{
 }
 
-void Splash::Draw() {
+void Splash::Draw() const
+{
     Engine::GetWindow().Clear(UINT_MAX);
 
     texture->Draw(Math::TranslationMatrix({ (Engine::GetWindow().GetSize() - texture->GetSize()) / 2.0 }));
 }
 
+void Splash::DrawImGui() {}

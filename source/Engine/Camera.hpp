@@ -17,7 +17,9 @@ namespace CS230
     class Camera : public Component
     {
     public:
-        Camera(Math::rect player_zone);
+        using CS230::Component::Update;
+        
+        Camera(Math::rect pz);
         void                       SetPosition(Math::vec2 new_position);
         const Math::vec2&          GetPosition() const;
         void                       SetLimit(Math::irect new_limit);
@@ -26,7 +28,7 @@ namespace CS230
 
     private:
         Math::irect limit;
-        Math::vec2  position;
         Math::rect  player_zone;
+        Math::vec2  position;
     };
 }

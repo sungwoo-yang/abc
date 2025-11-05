@@ -6,12 +6,14 @@
  */
 
 #include "Engine/Engine.hpp"
+#include "Engine/Error.hpp"
 #include "Engine/GameStateManager.hpp"
 #include "Engine/Window.hpp"
 #include "Game/Mainmenu.hpp"
 #include "Game/Mode1.hpp"
 #include "Game/Mode2.hpp"
 #include "Game/Splash.hpp"
+#include <iostream>
 
 namespace
 {
@@ -64,22 +66,34 @@ EMSCRIPTEN_BINDINGS(main_window)
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
 {
-    Engine& engine = Engine::Instance();
-    engine.Start("Sungwoo Yang");
+    try
+    {
+        Engine& engine = Engine::Instance();
+        engine.Start("Sungwoo Yang");
 
-    // engine.GetGameStateManager().PushState<DemoShapes>();
+        engine.AddFont("Assets/fonts/Font_Simple.png");
+        engine.AddFont("Assets/fonts/Font_Outlined.png");
+
+        engine.GetGameStateManager().PushState<Splash>();
 
 #if !defined(__EMSCRIPTEN__)
-    while (engine.HasGameEnded() == false)
-    {
-        engine.Update();
-    }
-    engine.Stop();
+        while (engine.HasGameEnded() == false)
+        {
+            engine.Update();
+        }
+        engine.Stop();
 #else
-    // https://emscripten.org/docs/api_reference/emscripten.h.html#c.emscripten_set_main_loop
-    constexpr bool simulate_infinite_loop  = true;
-    constexpr int  match_browser_framerate = -1;
-    emscripten_set_main_loop(main_loop, match_browser_framerate, simulate_infinite_loop);
+        // https://emscripten.org/docs/api_reference/emscripten.h.html#c.emscripten_set_main_loop
+        constexpr bool simulate_infinite_loop  = true;
+        constexpr int  match_browser_framerate = -1;
+        emscripten_set_main_loop(main_loop, match_browser_framerate, simulate_infinite_loop);
 #endif
-    return 0;
+        return 0;
+    }
+
+    catch (std::exception& e)
+    {
+        std::cerr << e.what() << "\n";
+        return -1;
+    }
 }

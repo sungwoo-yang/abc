@@ -6,8 +6,10 @@
  * \copyright DigiPen Institute of Technology
  */
 #pragma once
-#include "Sprite.hpp"
 #include "ComponentManager.hpp"
+#include "Sprite.hpp"
+#include "Vec2.hpp"
+#include "Matrix.hpp"
 
 enum class GameObjectTypes;
 
@@ -19,8 +21,8 @@ namespace CS230
     {
     public:
         friend class Sprite;
-        GameObject(Math::vec2 position);
-        GameObject(Math::vec2 position, double rotation, Math::vec2 scale);
+        GameObject(Math::vec2 pos);
+        GameObject(Math::vec2 pos, double rot, Math::vec2 sc);
 
         virtual ~GameObject()
         {
@@ -65,6 +67,7 @@ namespace CS230
         class State
         {
         public:
+            virtual ~State()                                          = default;
             virtual void        Enter(GameObject* object)             = 0;
             virtual void        Update(GameObject* object, double dt) = 0;
             virtual void        CheckExit(GameObject* object)         = 0;

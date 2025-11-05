@@ -14,7 +14,7 @@ Created:    May 29, 2025
 
 class Laser : public CS230::GameObject {
 public:
-    Laser(Math::vec2 pos, double rot, Math::vec2 scale, Math::vec2 vel);
+    Laser(Math::vec2 pos, double rot, Math::vec2 sc, Math::vec2 vel);
     GameObjectTypes Type() override { return GameObjectTypes::Laser; }
     std::string TypeName() override { return "Laser"; }
     void Update(double dt) override;

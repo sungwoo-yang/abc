@@ -9,6 +9,10 @@
 
 #pragma once
 #include <limits>
+#include <numbers>
+#include <cmath>
+
+constexpr double PI = std::numbers::pi;
 
 namespace Math
 {

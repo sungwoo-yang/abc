@@ -21,6 +21,7 @@ public:
     void Update(double dt) override;
     void Unload() override;
     void Draw() const override;
+    void DrawImGui() override;
 
     gsl::czstring GetName() const override
     {
@@ -29,5 +30,5 @@ public:
 
 public:
     double          counter = 0;
-    CS230::Texture* texture = nullptr;
+    std::shared_ptr<CS230::Texture> texture = nullptr;
 };

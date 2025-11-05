@@ -14,6 +14,7 @@ Created:    April 29, 2025
 #include "Engine/Font.hpp"
 #include "Engine/Vec2.hpp"
 #include <vector>
+#include <memory>
 
 class MainMenu : public CS230::GameState {
 public:
@@ -21,6 +22,7 @@ public:
     void Update(double dt) override;
     void Unload() override;
     void Draw() const override;
+    void DrawImGui() override;
     gsl::czstring GetName() const override {
         return "MainMenu"; 
     }
@@ -29,12 +31,12 @@ private:
     struct MenuTexture {
         std::string text;
         Math::vec2 position;
-        CS230::Texture* texture = nullptr;
+        std::shared_ptr<CS230::Texture> texture = nullptr;
     };
         
     int selected_index = 0;
     std::vector<MenuTexture> menu_textures;
-    CS230::Texture* title_texture = nullptr;
+    std::shared_ptr<CS230::Texture> title_texture = nullptr;
 
     void update_text(int selected);
 };

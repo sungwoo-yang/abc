@@ -8,7 +8,7 @@
 
 #include "Camera.hpp"
 
-CS230::Camera::Camera(Math::rect player_zone) : player_zone(player_zone), position({ 0, 0 })
+CS230::Camera::Camera(Math::rect pz) : player_zone(pz), position({ 0, 0 })
 {
 }
 

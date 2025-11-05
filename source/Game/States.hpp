@@ -10,7 +10,8 @@ Created:    March 11, 2025
 
 #pragma once
 
-enum class States {
+enum class States
+{
     Splash,
     MainMenu,
     Mode1,

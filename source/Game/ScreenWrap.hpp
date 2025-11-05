@@ -14,7 +14,7 @@ Created:    May 8, 2025
 
 class ScreenWrap : public CS230::Component {
 public:
-    ScreenWrap(CS230::GameObject& object) : object(object) {}
+    ScreenWrap(CS230::GameObject& obj) : object(obj) {}
     void Update(double dt) override;
 private:
     CS230::GameObject& object;

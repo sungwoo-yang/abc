@@ -9,35 +9,39 @@ Created:    March 11, 2025
 */
 
 #pragma once
-#include "Engine/GameState.hpp"
-#include "Engine/Texture.hpp"
-#include "Engine/Sprite.hpp"
-#include "Engine/Vec2.hpp"
-#include "Engine/Matrix.hpp"
 #include "Engine/Font.hpp"
+#include "Engine/GameState.hpp"
+#include "Engine/Matrix.hpp"
+#include "Engine/Sprite.hpp"
+#include "Engine/Texture.hpp"
+#include "Engine/Vec2.hpp"
+#include <memory>
 
 class Cat;
 
-class Mode1 : public CS230::GameState {
+class Mode1 : public CS230::GameState
+{
 public:
     Mode1();
     void Load() override;
     void Update(double dt) override;
     void Unload() override;
     void Draw() const override;
+    void DrawImGui() override;
 
-    gsl::czstring GetName() const override {
+    gsl::czstring GetName() const override
+    {
         return "Mode1";
     }
 
-    static constexpr double floor = 80;
+    static constexpr double floor     = 80;
     static constexpr double timer_max = 60;
 
 private:
-    Cat* cat_ptr;
-    CS230::Texture* timer_texture = nullptr;
-    CS230::Texture* score_texture = nullptr;
-    int last_timer;
-    void update_timer_text(int value);
-    void update_score_text(int value);
+    Cat*                            cat_ptr;
+    std::shared_ptr<CS230::Texture> timer_texture = nullptr;
+    std::shared_ptr<CS230::Texture> score_texture = nullptr;
+    int                             last_timer;
+    void                            update_timer_text(int value);
+    void                            update_score_text(int value);
 };

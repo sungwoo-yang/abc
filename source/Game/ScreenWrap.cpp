@@ -9,6 +9,7 @@ Created:    May 8, 2025
 */
 #include "ScreenWrap.hpp"
 #include "Engine/Engine.hpp"
+#include "Engine/Window.hpp"
 
 void ScreenWrap::Update([[maybe_unused]] double dt) {
     Math::ivec2 frame_size = object.GetGOComponent<CS230::Sprite>()->GetFrameSize();

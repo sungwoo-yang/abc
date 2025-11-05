@@ -76,7 +76,7 @@ void CS230::Animation::Reset()
 {
     current_command = 0;
     ended           = false;
-    current_frame   = static_cast<PlayFrame*>(commands[current_command]);
+    current_frame   = static_cast<PlayFrame*>(commands[static_cast<size_t>(current_command)]);
     current_frame->ResetTime();
 }
 
@@ -92,17 +92,17 @@ void CS230::Animation::Update(double dt)
     {
         current_frame->ResetTime();
         current_command++;
-        if (commands[current_command]->Type() == CommandType::PlayFrame)
+        if (commands[static_cast<size_t>(current_command)]->Type() == CommandType::PlayFrame)
         {
-            current_frame = static_cast<PlayFrame*>(commands[current_command]);
+            current_frame = static_cast<PlayFrame*>(commands[static_cast<size_t>(current_command)]);
         }
-        else if (commands[current_command]->Type() == CommandType::Loop)
+        else if (commands[static_cast<size_t>(current_command)]->Type() == CommandType::Loop)
         {
-            Loop* loop_data = static_cast<Loop*>(commands[current_command]);
+            Loop* loop_data = static_cast<Loop*>(commands[static_cast<size_t>(current_command)]);
             current_command = loop_data->LoopIndex();
-            if (commands[current_command]->Type() == CommandType::PlayFrame)
+            if (commands[static_cast<size_t>(current_command)]->Type() == CommandType::PlayFrame)
             {
-                current_frame = static_cast<PlayFrame*>(commands[current_command]);
+                current_frame = static_cast<PlayFrame*>(commands[static_cast<size_t>(current_command)]);
             }
             else
             {
@@ -110,14 +110,14 @@ void CS230::Animation::Update(double dt)
                 Reset();
             }
         }
-        else if (commands[current_command]->Type() == CommandType::End)
+        else if (commands[static_cast<size_t>(current_command)]->Type() == CommandType::End)
         {
             ended = true;
         }
     }
 }
 
-PlayFrame::PlayFrame(int frame, double duration) : frame(frame), target_time(duration), timer(0.0)
+PlayFrame::PlayFrame(int fr, double dura) : frame(fr), target_time(dura), timer(0.0)
 {
 }
 
@@ -141,7 +141,7 @@ void PlayFrame::ResetTime()
     timer = 0.0;
 }
 
-Loop::Loop(int loop_index) : loop_index(loop_index)
+Loop::Loop(int li) : loop_index(li)
 {
 }
 

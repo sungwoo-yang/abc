@@ -56,7 +56,7 @@ private:
 class PlayFrame : public Command
 {
 public:
-    PlayFrame(int frame, double duration);
+    PlayFrame(int fr, double dura);
 
     virtual CommandType Type() override
     {

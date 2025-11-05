@@ -13,8 +13,8 @@ Created:    April 22, 2025
 #include "Engine/Engine.hpp"
 #include "Mode1.hpp"
 
-Robot::Robot(Math::vec2 position, Cat* cat, double left, double right) : 
-	CS230::GameObject(position), target_cat(cat), left_boundary(left), right_boundary(right), speed(walking_speed) {
+Robot::Robot(Math::vec2 pos, Cat* cat, double left, double right) : 
+	CS230::GameObject(pos), target_cat(cat), left_boundary(left), right_boundary(right), speed(walking_speed) {
 	AddGOComponent(new CS230::Sprite("Assets/Robot.spt", this));
     change_state(&state_walking);
 }

@@ -1,9 +1,11 @@
 #include "Score.hpp"
 
-void Score::Add(int amount) {
+void Score::Add(int amount)
+{
     score += amount;
 }
 
-int Score::Value() const {
+int Score::Value() const
+{
     return score;
 }

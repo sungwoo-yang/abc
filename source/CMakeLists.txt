@@ -16,23 +16,56 @@ set(SOURCE_CODE
     CS200/RenderingAPI.hpp CS200/RenderingAPI.cpp
     CS200/RGBA.hpp
 
+    Engine/Animation.hpp Engine/Animation.cpp
+    Engine/Camera.hpp Engine/Camera.cpp
+    Engine/Collision.hpp Engine/Collision.cpp
+    Engine/Component.hpp
+    Engine/ComponentManager.hpp
+    Engine/CountdownTimer.hpp Engine/CountdownTimer.cpp
     Engine/Engine.hpp Engine/Engine.cpp
     Engine/Error.hpp
     Engine/Font.hpp Engine/Font.cpp
     Engine/FPS.hpp
+    Engine/GameObject.hpp Engine/GameObject.cpp
+    Engine/GameObjectManager.hpp Engine/GameObjectManager.cpp
+    Engine/GameObjectTypes.hpp
     Engine/GameState.hpp
     Engine/GameStateManager.hpp Engine/GameStateManager.cpp
     Engine/Input.hpp Engine/Input.cpp
     Engine/Logger.hpp Engine/Logger.cpp
     Engine/Matrix.hpp Engine/Matrix.cpp
+    Engine/Particle.hpp Engine/Particle.cpp
     Engine/Path.hpp Engine/Path.cpp
     Engine/Random.hpp Engine/Random.cpp
     Engine/Rect.hpp
+    Engine/ShowCollision.hpp Engine/ShowCollision.cpp
+    Engine/Sprite.hpp Engine/Sprite.cpp
     Engine/Texture.hpp Engine/Texture.cpp
     Engine/TextureManager.hpp Engine/TextureManager.cpp
     Engine/Timer.hpp
     Engine/Vec2.hpp Engine/Vec2.cpp
     Engine/Window.hpp Engine/Window.cpp
+
+    Game/Asteroid.hpp Game/Asteroid.cpp
+    Game/Background.hpp Game/Background.cpp
+    Game/Cat.hpp Game/Cat.cpp
+    Game/Crates.hpp Game/Crates.cpp
+    Game/Floor.hpp Game/Floor.cpp
+    Game/Fonts.hpp
+    Game/Gravity.hpp
+    Game/Laser.hpp Game/Laser.cpp
+    Game/Mainmenu.hpp Game/Mainmenu.cpp
+    Game/Meteor.hpp Game/Meteor.cpp
+    Game/Mode1.hpp Game/Mode1.cpp
+    Game/Mode2.hpp Game/Mode2.cpp
+    Game/Particles.hpp
+    Game/Portal.hpp Game/Portal.cpp
+    Game/Robot.hpp Game/Robot.cpp
+    Game/Score.hpp Game/Score.cpp
+    Game/ScreenWrap.hpp Game/ScreenWrap.cpp
+    Game/Ship.hpp Game/Ship.cpp
+    Game/Splash.hpp Game/Splash.cpp
+    Game/States.hpp
 
     OpenGL/Buffer.hpp OpenGL/Buffer.cpp
     OpenGL/Environment.hpp

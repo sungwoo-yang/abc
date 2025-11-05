@@ -15,7 +15,7 @@ Created:    May 27, 2025
 
 class Portal : public CS230::GameObject {
 public:
-    Portal(int to_state, Math::irect boundary);
+    Portal(int ts, Math::irect boundary);
     std::string TypeName() override { return "Portal"; }
     virtual GameObjectTypes Type() override { return GameObjectTypes::Portal; }
 
