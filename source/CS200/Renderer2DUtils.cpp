@@ -32,11 +32,11 @@ namespace CS200::Renderer2DUtils
     {
         const vec2  world_size{ static_cast<float>(std::sqrt(transform[0][0] * transform[0][0] + transform[1][0] * transform[1][0])),
                                static_cast<float>(std::sqrt(transform[0][1] * transform[0][1] + transform[1][1] * transform[1][1])) };
-        const float line_width_addition = std::max(static_cast<float>(line_width), 0.0f);
+        const float line_width_addition = std::max(static_cast<float>(line_width) * 2.0f, 0.0f);
         const vec2  quad_size           = { world_size[0] + line_width_addition, world_size[1] + line_width_addition };
 
         const vec2 scale_up       = { quad_size[0] / world_size[0], quad_size[1] / world_size[1] };
-        mat3       quad_transform = to_opengl_mat3(transform);
+        mat3       quad_transform = to_opengl_mat3(transform);  
         quad_transform[0] *= scale_up[0];
         quad_transform[1] *= scale_up[0];
         quad_transform[3] *= scale_up[1];

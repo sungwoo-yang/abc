@@ -19,7 +19,7 @@ out vec2 v_sdf_coord;
 
 void main()
 {
-    v_sdf_coord = a_position * u_world_size / u_quad_size;
+    v_sdf_coord = a_position;
     vec3 ndc_pos = u_ndc_matrix * u_model_matrix * vec3(a_position, 1.0);
     gl_Position = vec4(ndc_pos.xy, 0.0, 1.0);
 }

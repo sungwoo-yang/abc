@@ -236,21 +236,6 @@ namespace CS230
         static std::shared_ptr<Texture> EndRenderTextureMode();
 
     private:
-        /**
-         * \todo Implement Core data structure for texture resource management
-         *
-         * The TextureManager maintains a cache specifically for file-based textures
-         * to provide efficient resource management:
-         *
-         * File-Based Texture Cache (textures):
-         * - Maps file paths to shared_ptr<Texture> for strong ownership
-         * - Prevents duplicate loading of the same image file
-         * - Cache persists until explicit Unload() or manager destruction
-         * - Shared ownership allows textures to outlive the manager cache
-         *
-         * Generated textures from render-to-texture operations are returned directly
-         * to the caller without caching, allowing independent lifecycle management.
-         */
         std::unordered_map<std::string, std::shared_ptr<Texture>> textures;
     };
 }
