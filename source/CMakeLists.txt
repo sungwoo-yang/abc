@@ -16,10 +16,6 @@ set(SOURCE_CODE
     CS200/RenderingAPI.hpp CS200/RenderingAPI.cpp
     CS200/RGBA.hpp
 
-    Demo/DemoShapes.hpp Demo/DemoShapes.cpp
-    Demo/DemoFramebuffer.hpp Demo/DemoFramebuffer.cpp
-    Demo/DemoText.hpp Demo/DemoText.cpp
-
     Engine/Engine.hpp Engine/Engine.cpp
     Engine/Error.hpp
     Engine/Font.hpp Engine/Font.cpp

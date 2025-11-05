@@ -7,6 +7,7 @@
  * \copyright DigiPen Institute of Technology
  */
 #include "GameStateManager.hpp"
+#include "Engine.hpp"
 
 namespace CS230
 {
@@ -20,10 +21,16 @@ namespace CS230
         state->Unload();
     }
 
-    void GameStateManager::Update()
+    void GameStateManager::Update(double dt)
     {
         mToClear.clear();
-        mGameStateStack.back()->Update();
+        mGameStateStack.back()->Update(double dt);
+
+        GameObjectManager* gom = mGameStateStack.back()->GetGSComponent<GameObjectManager>();
+        if (gom != nullptr)
+        {
+            gom->CollisionTest();
+        }
     }
 
     void GameStateManager::Draw()

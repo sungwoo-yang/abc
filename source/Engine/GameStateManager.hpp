@@ -8,8 +8,8 @@
  */
 #pragma once
 
-#include "Engine/Engine.hpp"
-#include "Engine/Logger.hpp"
+#include "Engine.hpp"
+#include "Logger.hpp"
 #include "GameState.hpp"
 #include <memory>
 #include <vector>
@@ -22,7 +22,7 @@ namespace CS230
         template <typename STATE>
         void PushState();
         void PopState();
-        void Update();
+        void Update(double dt);
         void Draw();
         void DrawImGui();
 
@@ -32,6 +32,17 @@ namespace CS230
         }
 
         void Clear();
+
+        template <typename T>
+        T* GetGSComponent()
+        {
+            if (mGameStateStack.empty())
+            {
+                return nullptr;
+            }
+
+            return mGameStateStack.back()->GetGSComponent<T>();
+        }
 
     private:
         std::vector<std::unique_ptr<GameState>> mGameStateStack;
