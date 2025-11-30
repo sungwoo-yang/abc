@@ -8,16 +8,16 @@ Author:     Sungwoo Yang
 Created:    March 20, 2025
 */
 
-#include "Cat.h"
-#include "../Engine/Engine.h"
-#include "../Engine/Collision.h"
-#include "../Engine/Particle.h"
-#include "Mode1.h"
-#include "Gravity.h"
-#include "Portal.h"
-#include "States.h"
-#include "Score.h"
-#include "Particles.h"
+#include "Cat.hpp"
+#include "Engine/Engine.hpp"
+#include "Engine/Collision.hpp"
+#include "Engine/Particle.hpp"
+#include "Mode1.hpp"
+#include "Gravity.hpp"
+#include "Portal.hpp"
+#include "States.hpp"
+#include "Score.hpp"
+#include "Particles.hpp"
 
 Cat::Cat(Math::vec2 start_position, GameObject* starting_floor) :
     GameObject(start_position),
@@ -25,9 +25,9 @@ Cat::Cat(Math::vec2 start_position, GameObject* starting_floor) :
     hurt_timer(nullptr),
     fall_start_y(0)
 {
-    AddGOComponent(new CS230::Sprite("Assets/Cat.spt", this));
+    AddGOComponent(new CS230::Sprite("Assets/images/Cat.spt", this));
     change_state(&state_idle);
-    hurt_timer = new CS230::Timer(0.0);
+    hurt_timer = new CS230::CountdownTimer(0.0);
     AddGOComponent(hurt_timer);
 }
 

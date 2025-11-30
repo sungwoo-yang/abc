@@ -8,21 +8,17 @@ Author:     Sungwoo Yang
 Created:    March 20, 2025
 */
 
-#include "Ship.h"
-#include "ScreenWrap.h"
-#include "../Engine/Engine.h"
-#include "../Engine/Collision.h"
-#include "../Engine/ShowCollision.h"
-#include "../GameObjectTypes.h"
-#include "Laser.h"
+#include "Ship.hpp"
+#include "Engine/Collision.hpp"
+#include "Engine/Engine.hpp"
+#include "Engine/GameObjectTypes.hpp"
+#include "Engine/ShowCollision.hpp"
+#include "Laser.hpp"
+#include "ScreenWrap.hpp"
 
-Ship::Ship(Math::vec2 start_position) :
-    GameObject(start_position, 0.0, { scale, scale }),
-    flame_left("Assets/Flame.spt"),
-    flame_right("Assets/Flame.spt"),
-    exploded(false)
+Ship::Ship(Math::vec2 start_position) : GameObject(start_position, 0.0, { scale, scale }), flame_left("Assets/images/Flame.spt"), flame_right("Assets/images/Flame.spt"), exploded(false)
 {
-    auto* sprite = new CS230::Sprite("Assets/Ship.spt", this);
+    auto* sprite = new CS230::Sprite("Assets/images/Ship.spt", this);
     AddGOComponent(sprite);
     sprite->PlayAnimation(static_cast<int>(Animations::None));
 
@@ -31,37 +27,45 @@ Ship::Ship(Math::vec2 start_position) :
     flame_left.PlayAnimation(static_cast<int>(Flame_Animations::Off));
     flame_right.PlayAnimation(static_cast<int>(Flame_Animations::Off));
 
-    size = sprite->GetFrameSize();
+    size     = sprite->GetFrameSize();
     flame_on = false;
 }
 
-void Ship::Update(double dt) {
-    if (exploded == false) {
-        if (Engine::GetInput().KeyDown(CS230::Input::Keys::W)) {
+void Ship::Update(double dt)
+{
+    if (exploded == false)
+    {
+        if (Engine::GetInput().KeyDown(CS230::Input::Keys::W))
+        {
             UpdateVelocity(Math::RotationMatrix(GetRotation()) * Math::vec2{ 0, speed * dt });
-            if (flame_on == false) {
+            if (flame_on == false)
+            {
                 flame_left.PlayAnimation(static_cast<int>(Flame_Animations::On));
                 flame_right.PlayAnimation(static_cast<int>(Flame_Animations::On));
                 flame_on = true;
             }
         }
-        else {
+        else
+        {
             flame_left.PlayAnimation(static_cast<int>(Flame_Animations::Off));
             flame_right.PlayAnimation(static_cast<int>(Flame_Animations::Off));
             flame_on = false;
         }
 
-        if (Engine::GetInput().KeyDown(CS230::Input::Keys::A)) {
+        if (Engine::GetInput().KeyDown(CS230::Input::Keys::A))
+        {
             UpdateRotation(rotation_speed * dt);
         }
-        if (Engine::GetInput().KeyDown(CS230::Input::Keys::D)) {
+        if (Engine::GetInput().KeyDown(CS230::Input::Keys::D))
+        {
             UpdateRotation(-rotation_speed * dt);
         }
 
-        if (Engine::GetInput().KeyJustPressed(CS230::Input::Keys::Enter)) {
-            auto* sprite = GetGOComponent<CS230::Sprite>();
-            Math::vec2 hotspot_left = static_cast<Math::vec2>(sprite->GetHotSpot(3));
-            Math::vec2 hotspot_right = static_cast<Math::vec2>(sprite->GetHotSpot(4));
+        if (Engine::GetInput().KeyJustPressed(CS230::Input::Keys::Enter))
+        {
+            auto*      sprite         = GetGOComponent<CS230::Sprite>();
+            Math::vec2 hotspot_left   = static_cast<Math::vec2>(sprite->GetHotSpot(3));
+            Math::vec2 hotspot_right  = static_cast<Math::vec2>(sprite->GetHotSpot(4));
             Math::vec2 laser_velocity = Math::RotationMatrix(GetRotation()) * Math::vec2{ 0.0, Laser::DefaultVelocity };
 
             auto* manager = Engine::GetGameStateManager().GetGSComponent<CS230::GameObjectManager>();
@@ -79,38 +83,48 @@ void Ship::Update(double dt) {
     UpdateGOComponents(dt);
 }
 
-void Ship::Draw(Math::TransformationMatrix camera_matrix) {
+void Ship::Draw(Math::TransformationMatrix camera_matrix)
+{
     auto* sprite = GetGOComponent<CS230::Sprite>();
-    if (sprite == nullptr) {
+    if (sprite == nullptr)
+    {
         return;
     }
 
-    if (!exploded) {
+    if (!exploded)
+    {
         flame_left.Draw(camera_matrix * GetMatrix() * Math::TranslationMatrix(sprite->GetHotSpot(1)));
         flame_right.Draw(camera_matrix * GetMatrix() * Math::TranslationMatrix(sprite->GetHotSpot(2)));
     }
 
     sprite->Draw(camera_matrix * GetMatrix());
 
-    if (!exploded) {
+    if (!exploded)
+    {
         auto show = Engine::GetGameStateManager().GetGSComponent<CS230::ShowCollision>();
-        if (show != nullptr && show->Enabled()) {
+        if (show != nullptr && show->Enabled())
+        {
             CS230::Collision* collision = GetGOComponent<CS230::Collision>();
-            if (collision != nullptr) {
+            if (collision != nullptr)
+            {
                 collision->Draw(camera_matrix);
             }
         }
     }
 }
 
-bool Ship::CanCollideWith(GameObjectTypes) {
+bool Ship::CanCollideWith(GameObjectTypes)
+{
     return true;
 }
 
-void Ship::ResolveCollision(GameObject* other_object) {
-    if (exploded) return;
+void Ship::ResolveCollision(GameObject* other_object)
+{
+    if (exploded)
+        return;
 
-    if (other_object->Type() == GameObjectTypes::Meteor) {
+    if (other_object->Type() == GameObjectTypes::Meteor)
+    {
         auto* sprite = GetGOComponent<CS230::Sprite>();
         sprite->PlayAnimation(static_cast<int>(Animations::Explosion));
         RemoveGOComponent<CS230::Collision>();

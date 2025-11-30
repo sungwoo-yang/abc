@@ -8,10 +8,10 @@ Author:     Sungwoo Yang
 Created:    April 29, 2025
 */
 
-#include "../Engine/Engine.h"
-#include "Mainmenu.h"
-#include "States.h"
-#include "Fonts.h"
+#include "Engine/Engine.hpp"
+#include "Mainmenu.hpp"
+#include "States.hpp"
+#include "Fonts.hpp"
 
 void MainMenu::update_text(int selected) {
     for (int i = 0; i < static_cast<int>(menu_textures.size()); ++i) {

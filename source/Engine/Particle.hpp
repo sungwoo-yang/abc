@@ -1,8 +1,8 @@
 #pragma once
 #include "Component.hpp"
 #include "Engine.hpp"
+#include "Engine/GameObjectTypes.hpp"
 #include "GameObjectManager.hpp"
-#include "GameObjectTypes.hpp"
 #include "GameStateManager.hpp"
 #include "Logger.hpp"
 #include "Random.hpp"

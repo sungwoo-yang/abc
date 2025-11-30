@@ -7,8 +7,8 @@ Project:    CS230 Engine
 Author:     Sungwoo Yang
 Created:    May 8, 2025
 */
-#include "ScreenWrap.h"
-#include "../Engine/Engine.h"
+#include "ScreenWrap.hpp"
+#include "Engine/Engine.hpp"
 
 void ScreenWrap::Update([[maybe_unused]] double dt) {
     Math::ivec2 frame_size = object.GetGOComponent<CS230::Sprite>()->GetFrameSize();

@@ -8,8 +8,8 @@ Author:     Sungwoo Yang
 Created:    May 27, 2025
 */
 
-#include "Portal.h"
-#include "../Engine/Engine.h"
+#include "Portal.hpp"
+#include "Engine/Engine.hpp"
 
 Portal::Portal(int to_state, Math::irect boundary) :
     GameObject(static_cast<Math::vec2>(boundary.point_1)),

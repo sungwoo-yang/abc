@@ -8,7 +8,7 @@ Author:     Sungwoo Yang
 Created:    May 27, 2025
 */
 
-#include "Floor.h"
+#include "Floor.hpp"
 
 Floor::Floor(Math::irect boundary) : GameObject(static_cast<Math::vec2>(boundary.point_1)) {
     AddGOComponent(new CS230::RectCollision({ Math::ivec2{ 0, 0 }, boundary.Size() }, this));

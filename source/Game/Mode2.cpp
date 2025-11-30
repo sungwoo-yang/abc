@@ -8,16 +8,16 @@ Author:     Sungwoo Yang
 Created:    March 11, 2025
 */
 
-#include "../Engine/Engine.h"
-#include "../Engine/ShowCollision.h"
-#include "../Engine/Particle.h"
-#include "States.h"
-#include "Mode2.h"
-#include "ship.h"
-#include "Meteor.h"
-#include "Fonts.h"
-#include "Particles.h"
-#include "Score.h"
+#include "Engine/Engine.hpp"
+#include "Engine/ShowCollision.hpp"
+#include "Engine/Particle.hpp"
+#include "States.hpp"
+#include "Mode2.hpp"
+#include "ship.hpp"
+#include "Meteor.hpp"
+#include "Fonts.hpp"
+#include "Particles.hpp"
+#include "Score.hpp"
 
 Mode2::Mode2()
     : gameover_text(nullptr), restart_text(nullptr), ship(nullptr), meteor_spawn_timer(4.5) {}

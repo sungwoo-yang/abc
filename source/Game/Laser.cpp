@@ -7,16 +7,16 @@ Project:    CS230 Engine
 Author:     Sungwoo Yang
 Created:    May 29, 2025
 */
-#include "Laser.h"
-#include "../Engine/Sprite.h"
-#include "../Engine/Engine.h"
-#include "../Engine/GameObjectManager.h"
+#include "Laser.hpp"
+#include "Engine/Sprite.hpp"
+#include "Engine/Engine.hpp"
+#include "Engine/GameObjectManager.hpp"
 
 Laser::Laser(Math::vec2 pos, double rot, Math::vec2 scale, Math::vec2 vel)
     : GameObject(pos, rot, scale) {
 
     SetVelocity(vel);
-    AddGOComponent(new CS230::Sprite("Assets/Laser.spt", this));
+    AddGOComponent(new CS230::Sprite("Assets/images/Laser.spt", this));
 }
 
 void Laser::Update(double dt) {

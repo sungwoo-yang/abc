@@ -8,21 +8,21 @@ Author:     Sungwoo Yang
 Created:    April 22, 2025
 */
 
-#include "Crates.h"
+#include "Crates.hpp"
 
 Crates::Crates(Math::vec2 position, int size) : CS230::GameObject(position) {
     switch (size) {
     case 1:
-        AddGOComponent(new CS230::Sprite("Assets/Crates1.spt", this));
+        AddGOComponent(new CS230::Sprite("Assets/images/Crates1.spt", this));
         break;
     case 2:
-        AddGOComponent(new CS230::Sprite("Assets/Crates2.spt", this));
+        AddGOComponent(new CS230::Sprite("Assets/images/Crates2.spt", this));
         break;
     case 3:
-        AddGOComponent(new CS230::Sprite("Assets/Crates3.spt", this));
+        AddGOComponent(new CS230::Sprite("Assets/images/Crates3.spt", this));
         break;
     case 5:
-        AddGOComponent(new CS230::Sprite("Assets/Crates5.spt", this));
+        AddGOComponent(new CS230::Sprite("Assets/images/Crates5.spt", this));
         break;
     }
 }

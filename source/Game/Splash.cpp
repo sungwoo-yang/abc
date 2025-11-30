@@ -8,9 +8,9 @@ Author:     Sungwoo Yang
 Created:    March 11, 2025
 */
 
-#include "../Engine/Engine.h"
-#include "States.h"
-#include "Splash.h"
+#include "Engine/Engine.hpp"
+#include "States.hpp"
+#include "Splash.hpp"
 
 
 
@@ -20,7 +20,7 @@ Splash::Splash() {
 
 void Splash::Load() {
     counter = 0;
-    texture = Engine::GetTextureManager().Load("Assets/DigiPen.png");
+    texture = Engine::GetTextureManager().Load("Assets/images/DigiPen.png");
 }
 
 void Splash::Update(double dt) {

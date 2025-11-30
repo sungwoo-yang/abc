@@ -8,14 +8,14 @@ Author:     Sungwoo Yang
 Created:    April 22, 2025
 */
 
-#include "Robot.h"
-#include "../Engine/Collision.h"
-#include "../Engine/Engine.h"
-#include "Mode1.h"
+#include "Robot.hpp"
+#include "Engine/Collision.hpp"
+#include "Engine/Engine.hpp"
+#include "Mode1.hpp"
 
 Robot::Robot(Math::vec2 position, Cat* cat, double left, double right) : 
 	CS230::GameObject(position), target_cat(cat), left_boundary(left), right_boundary(right), speed(walking_speed) {
-	AddGOComponent(new CS230::Sprite("Assets/Robot.spt", this));
+	AddGOComponent(new CS230::Sprite("Assets/images/Robot.spt", this));
     change_state(&state_walking);
 }
 

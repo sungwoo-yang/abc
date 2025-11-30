@@ -46,6 +46,27 @@ set(SOURCE_CODE
     Engine/Vec2.hpp Engine/Vec2.cpp
     Engine/Window.hpp Engine/Window.cpp
 
+    Game/Asteroid.hpp Game/Asteroid.cpp
+    Game/Background.hpp Game/Background.cpp
+    Game/Cat.hpp Game/Cat.cpp
+    Game/Crates.hpp Game/Crates.cpp
+    Game/Floor.hpp Game/Floor.cpp
+    Game/Fonts.hpp
+    Game/Gravity.hpp
+    Game/Laser.hpp Game/Laser.cpp
+    Game/Mainmenu.hpp Game/Mainmenu.cpp
+    Game/Meteor.hpp Game/Meteor.cpp
+    Game/Mode1.hpp Game/Mode1.cpp
+    Game/Mode2.hpp Game/Mode2.cpp
+    Game/Particles.hpp
+    Game/Portal.hpp
+    Game/Robot.hpp Game/Robot.cpp
+    Game/Score.hpp Game/Score.cpp
+    Game/ScreenWrap.hpp Game/ScreenWrap.cpp
+    Game/Ship.hpp Game/Ship.cpp
+    Game/Splash.hpp Game/Splash.cpp
+    Game/States.hpp
+
     OpenGL/Buffer.hpp OpenGL/Buffer.cpp
     OpenGL/Environment.hpp
     OpenGL/Framebuffer.hpp OpenGL/Framebuffer.cpp

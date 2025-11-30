@@ -8,17 +8,17 @@ Author:     Sungwoo Yang
 Created:    April 22, 2025
 */
 
-#include "Meteor.h"
-#include "../Engine/Engine.h"
-#include "../Engine/Collision.h"
-#include "../Engine/Particle.h"
-#include "Particles.h"
-#include "Score.h"
+#include "Meteor.hpp"
+#include "Engine/Engine.hpp"
+#include "Engine/Collision.hpp"
+#include "Engine/Particle.hpp"
+#include "Particles.hpp"
+#include "Score.hpp"
 
 Meteor::Meteor() : Meteor(nullptr) {}
 
 Meteor::Meteor(Meteor* parent) : CS230::GameObject({ 0, 0 }) {
-	AddGOComponent(new CS230::Sprite("Assets/Meteor.spt", this));
+	AddGOComponent(new CS230::Sprite("Assets/images/Meteor.spt", this));
 
 	if (parent == nullptr) {
 		Math::ivec2 win = Engine::GetWindow().GetSize();
