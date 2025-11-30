@@ -8,10 +8,10 @@ Author:     Sungwoo Yang
 Created:    April 22, 2025
 */
 
-#include "Crates.hpp"
+#include "Crates.h"
 
-Crates::Crates(Math::vec2 pos, int sz) : CS230::GameObject(pos) {
-    switch (sz) {
+Crates::Crates(Math::vec2 position, int size) : CS230::GameObject(position) {
+    switch (size) {
     case 1:
         AddGOComponent(new CS230::Sprite("Assets/Crates1.spt", this));
         break;

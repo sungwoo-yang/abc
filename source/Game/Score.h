@@ -1,6 +1,6 @@
 #pragma once
-#include "Engine/GameObjectTypes.hpp"
-#include "Engine/GameState.hpp"
+#include "../GameObjectTypes.h"
+#include "../Engine/GameState.h"
 
 class Score : public CS230::Component {
 public:

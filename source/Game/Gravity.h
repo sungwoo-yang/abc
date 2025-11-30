@@ -9,7 +9,7 @@ Created:    May 8, 2025
 */
 
 #pragma once
-#include "Engine/Component.hpp"
+#include "../Engine/Component.h"
 
 class Gravity : public CS230::Component {
 public:

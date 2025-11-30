@@ -7,9 +7,9 @@
  * \copyright DigiPen Institute of Technology
  */
 
-#include "GameObjectManager.hpp"
 #include "GameStateManager.hpp"
 #include "Engine.hpp"
+#include "GameObjectManager.hpp"
 
 namespace CS230
 {
@@ -26,6 +26,12 @@ namespace CS230
     void GameStateManager::Update(double dt)
     {
         mToClear.clear();
+
+        if (mGameStateStack.empty())
+        {
+            return;
+        }
+
         mGameStateStack.back()->Update(dt);
 
         GameObjectManager* gom = mGameStateStack.back()->GetGSComponent<GameObjectManager>();

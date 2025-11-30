@@ -8,16 +8,12 @@ Author:     Sungwoo Yang
 Created:    April 22, 2025
 */
 
-#include "Engine/Engine.hpp"
-#include "Engine/Collision.hpp"
-#include "Engine/Particle.hpp"
-#include "Engine/Window.hpp"
-#include "Engine/GameStateManager.hpp"
-
-
-#include "Meteor.hpp"
-#include "Particles.hpp"
-#include "Score.hpp"
+#include "Meteor.h"
+#include "../Engine/Engine.h"
+#include "../Engine/Collision.h"
+#include "../Engine/Particle.h"
+#include "Particles.h"
+#include "Score.h"
 
 Meteor::Meteor() : Meteor(nullptr) {}
 
@@ -42,7 +38,7 @@ Meteor::Meteor(Meteor* parent) : CS230::GameObject({ 0, 0 }) {
 
 		SetPosition(spawn_pos);
 		SetVelocity((center - spawn_pos).Normalize() * default_velocity);
-		SetRotation((static_cast<double>(rand()) / RAND_MAX) * 2 * PI);
+		SetRotation(((double)rand() / RAND_MAX) * 2 * PI);
 
 		size = default_size;
 	}

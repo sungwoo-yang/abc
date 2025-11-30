@@ -9,13 +9,13 @@ Created:    April 22, 2025
 */
 
 #pragma once
-#include "Engine/GameObject.hpp"
-#include "Engine/GameObjectTypes.hpp"
-#include "Cat.hpp"
+#include "../Engine/GameObject.h"
+#include "../GameObjectTypes.h"
+#include "Cat.h"
 
 class Robot : public CS230::GameObject {
 public:
-    Robot(Math::vec2 pos, Cat* cat, double left, double right);
+    Robot(Math::vec2 position, Cat* cat, double left, double right);
     void Update(double dt) override;
     GameObjectTypes Type() override { return GameObjectTypes::Robot; }
     std::string TypeName() override { return "Robot"; }

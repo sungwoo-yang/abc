@@ -8,13 +8,13 @@ Author:     Sungwoo Yang
 Created:    May 8, 2025
 */
 #pragma once
-#include "Engine/Component.hpp"
-#include "Engine/GameObject.hpp"
-#include "Engine/Sprite.hpp"
+#include "../Engine/Component.h"
+#include "../Engine/GameObject.h"
+#include "../Engine/Sprite.h"
 
 class ScreenWrap : public CS230::Component {
 public:
-    ScreenWrap(CS230::GameObject& obj) : object(obj) {}
+    ScreenWrap(CS230::GameObject& object) : object(object) {}
     void Update(double dt) override;
 private:
     CS230::GameObject& object;

@@ -1,5 +1,5 @@
 #pragma once
-#include "Engine/Particle.hpp"
+#include "../Engine/Particle.h"
 
 namespace Particles {
     class Smoke : public CS230::Particle {

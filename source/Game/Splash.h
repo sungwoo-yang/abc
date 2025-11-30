@@ -9,26 +9,23 @@ Created:    March 11, 2025
 */
 
 #pragma once
-#include "Engine/Engine.hpp"
-#include "Engine/GameState.hpp"
-#include "Engine/Texture.hpp"
+#include "../Engine/GameState.h"
+#include "../Engine/Engine.h"
+#include "../Engine/Texture.h"
 
-class Splash : public CS230::GameState
-{
+class Splash : public CS230::GameState {
 public:
     Splash();
     void Load() override;
     void Update(double dt) override;
     void Unload() override;
-    void Draw() const override;
-    void DrawImGui() override;
+    void Draw() override;
 
-    gsl::czstring GetName() const override
-    {
+    std::string GetName() override {
         return "Splash";
     }
 
 public:
-    double          counter = 0;
-    std::shared_ptr<CS230::Texture> texture = nullptr;
+    double counter = 0;
+    CS230::Texture* texture = nullptr;
 };

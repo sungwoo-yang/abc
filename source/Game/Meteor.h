@@ -9,8 +9,8 @@ Created:    April 22, 2025
 */
 
 #pragma once
-#include "Engine/GameObject.hpp"
-#include "Engine/GameObjectTypes.hpp"
+#include "../Engine/GameObject.h"
+#include "../GameObjectTypes.h"
 
 class Meteor : public CS230::GameObject {
 public:

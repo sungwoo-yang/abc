@@ -9,12 +9,12 @@ Created:    April 22, 2025
 */
 
 #pragma once
-#include "Engine/GameObject.hpp"
-#include "Engine/GameObjectTypes.hpp"
+#include "../Engine/GameObject.h"
+#include "../GameObjectTypes.h"
 
 class Crates : public CS230::GameObject {
 public:
-    Crates(Math::vec2 pos, int sz);
+    Crates(Math::vec2 position, int size);
     GameObjectTypes Type() override { return GameObjectTypes::Crates; }
     std::string TypeName() override { return "Crates"; }
 };

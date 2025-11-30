@@ -9,6 +9,7 @@
 #include "Animation.hpp"
 #include "Engine.hpp"
 #include "Logger.hpp"
+#include "Path.hpp"
 #include <fstream>
 
 CS230::Animation::Animation(const std::filesystem::path& animation_file) : current_command(0)
@@ -17,10 +18,10 @@ CS230::Animation::Animation(const std::filesystem::path& animation_file) : curre
     {
         throw std::runtime_error(animation_file.generic_string() + " is not a .anm file");
     }
-    std::ifstream in_file(animation_file);
+    std::ifstream in_file(assets::locate_asset(animation_file));
     if (in_file.is_open() == false)
     {
-        throw std::runtime_error("Failed to load " + animation_file.generic_string());
+        throw std::runtime_error("Failed to load " + assets::locate_asset(animation_file).generic_string());
     }
 
     std::string command;

@@ -9,10 +9,10 @@
 #include "Engine/Error.hpp"
 #include "Engine/GameStateManager.hpp"
 #include "Engine/Window.hpp"
-#include "Game/Mainmenu.hpp"
-#include "Game/Mode1.hpp"
-#include "Game/Mode2.hpp"
-#include "Game/Splash.hpp"
+// #include "Game/Mainmenu.hpp"
+// #include "Game/Mode1.hpp"
+// #include "Game/Mode2.hpp"
+// #include "Game/Splash.hpp"
 #include <iostream>
 
 namespace
@@ -74,7 +74,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char* argv[])
         engine.AddFont("Assets/fonts/Font_Simple.png");
         engine.AddFont("Assets/fonts/Font_Outlined.png");
 
-        engine.GetGameStateManager().PushState<Splash>();
+        // engine.GetGameStateManager().PushState<Splash>();
 
 #if !defined(__EMSCRIPTEN__)
         while (engine.HasGameEnded() == false)

@@ -10,17 +10,17 @@ Created:    March 20, 2025
 */
 
 #pragma once
-#include "Engine/Sprite.hpp"
-#include "Engine/Input.hpp"
-#include "Engine/Vec2.hpp"
-#include "Engine/GameObject.hpp"
-#include "Engine/GameObjectTypes.hpp"
+#include "../Engine/Sprite.h"
+#include "../Engine/Input.h"
+#include "../Engine/Vec2.h"
+#include "../Engine/GameObject.h"
+#include "../GameObjectTypes.h"
 
 class Ship : public CS230::GameObject {
 public:
 	Ship(Math::vec2 start_position);
 	void Update(double dt) override;
-	void Draw(const Math::TransformationMatrix& camera_matrix) override;
+	void Draw(Math::TransformationMatrix camera_matrix) override;
 	bool Exploded() const { return exploded; }
 	GameObjectTypes Type() override { return GameObjectTypes::Ship; }
 	std::string TypeName() override { return "Ship"; }

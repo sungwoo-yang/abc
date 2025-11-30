@@ -9,8 +9,8 @@
 #pragma once
 
 #include "Engine.hpp"
-#include "Logger.hpp"
 #include "GameState.hpp"
+#include "Logger.hpp"
 #include <memory>
 #include <vector>
 
@@ -42,6 +42,11 @@ namespace CS230
             }
 
             return mGameStateStack.back()->GetGSComponent<T>();
+        }
+
+        gsl ::czstring GetCurrentStateName() const
+        {
+            return mGameStateStack.empty() ? "None" : mGameStateStack.back()->GetName();
         }
 
     private:

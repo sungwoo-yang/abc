@@ -11,6 +11,7 @@
 #include "Engine.hpp"
 #include "Logger.hpp"
 #include "TextureManager.hpp"
+#include "Path.hpp"
 #include <fstream>
 
 namespace CS230
@@ -70,11 +71,11 @@ namespace CS230
         {
             throw std::runtime_error(sprite_file.generic_string() + " is not a .spt file");
         }
-        std::ifstream in_file(sprite_file);
+        std::ifstream in_file(assets::locate_asset(sprite_file));
 
         if (in_file.is_open() == false)
         {
-            throw std::runtime_error("Failed to load " + sprite_file.generic_string());
+            throw std::runtime_error("Failed to load " + assets::locate_asset(sprite_file).string());
         }
 
         hotspots.clear();

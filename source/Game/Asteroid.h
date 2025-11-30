@@ -9,9 +9,9 @@ Created:    March 24, 2025
 */
 
 #pragma once
-#include "Engine/GameObject.hpp"
-#include "Engine/GameObjectTypes.hpp"
-#include "Engine/CountdownTimer.hpp"
+#include "../Engine/GameObject.h"
+#include "../GameObjectTypes.h"
+#include "../Engine/Timer.h"
 
 class Asteroid : public CS230::GameObject {
 public:

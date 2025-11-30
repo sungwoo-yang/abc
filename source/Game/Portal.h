@@ -9,13 +9,13 @@ Created:    May 27, 2025
 */
 
 #pragma once
-#include "Engine/GameObject.hpp"
-#include "Engine/Collision.hpp"
-#include "Engine/GameObjectTypes.hpp"
+#include "../Engine/GameObject.h"
+#include "../Engine/Collision.h"
+#include "../GameObjectTypes.h"
 
 class Portal : public CS230::GameObject {
 public:
-    Portal(int ts, Math::irect boundary);
+    Portal(int to_state, Math::irect boundary);
     std::string TypeName() override { return "Portal"; }
     virtual GameObjectTypes Type() override { return GameObjectTypes::Portal; }
 

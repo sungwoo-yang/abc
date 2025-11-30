@@ -8,33 +8,16 @@ Author:     Sungwoo Yang
 Created:    May 27, 2025
 */
 
-#include "Portal.hpp"
-#include "Engine/Engine.hpp"
-#include "Engine/GameStateManager.hpp"
-#include "States.hpp"
-#include "Mainmenu.hpp"
-#include "Mode1.hpp"
+#include "Portal.h"
+#include "../Engine/Engine.h"
 
-Portal::Portal(int ts, Math::irect boundary) :
+Portal::Portal(int to_state, Math::irect boundary) :
     GameObject(static_cast<Math::vec2>(boundary.point_1)),
-    to_state(ts)
+    to_state(to_state)
 {
     AddGOComponent(new CS230::RectCollision({ Math::ivec2{ 0, 0 }, boundary.Size() }, this));
 }
 
 void Portal::GoToState() {
-    Engine::GetGameStateManager().PopState();
-
-    switch (static_cast<States>(to_state))
-    {
-    case States::MainMenu:
-        Engine::GetGameStateManager().PushState<MainMenu>();
-        break;
-    case States::Mode1:
-        Engine::GetGameStateManager().PushState<Mode1>();
-        break;
-    default:
-        Engine::GetGameStateManager().PushState<MainMenu>();
-        break;
-    }
+    Engine::GetGameStateManager().SetNextGameState(to_state);
 }

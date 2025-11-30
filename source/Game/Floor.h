@@ -9,9 +9,9 @@ Created:    May 27, 2025
 */
 
 #pragma once
-#include "Engine/GameObject.hpp"
-#include "Engine/Collision.hpp"
-#include "Engine/GameObjectTypes.hpp"
+#include "../Engine/GameObject.h"
+#include "../Engine/Collision.h"
+#include "../GameObjectTypes.h"
 
 class Floor : public CS230::GameObject {
 public:
