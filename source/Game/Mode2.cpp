@@ -109,6 +109,10 @@ void Mode2::Draw() const
 
 void Mode2::Unload()
 {
+    if (gameobjectmanager)
+    {
+        gameobjectmanager->Unload();
+    }
     ClearGSComponents();
 }
 

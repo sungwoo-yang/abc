@@ -301,10 +301,10 @@ void Cat::State_Falling::CheckExit(GameObject* object)
         cat->SetVelocity({ cat->GetVelocity().x, 0 });
     }
 
-    if (cat->GetPosition().y < -500)
-    {
-        Engine::GetGameStateManager().PopState();
-    }
+    // if (cat->GetPosition().y < -500)
+    // {
+    //     Engine::GetGameStateManager().PopState();
+    // }
 }
 
 // Running

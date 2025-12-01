@@ -59,7 +59,7 @@ set(SOURCE_CODE
     Game/Mode1.hpp Game/Mode1.cpp
     Game/Mode2.hpp Game/Mode2.cpp
     Game/Particles.hpp
-    Game/Portal.hpp
+    Game/Portal.hpp Game/Portal.cpp
     Game/Robot.hpp Game/Robot.cpp
     Game/Score.hpp Game/Score.cpp
     Game/ScreenWrap.hpp Game/ScreenWrap.cpp

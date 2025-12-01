@@ -13,7 +13,7 @@ Created:    May 27, 2025
 #include "Engine/GameStateManager.hpp"
 #include "Mainmenu.hpp"
 
-Portal::Portal(int to_state, Math::irect boundary) : GameObject(static_cast<Math::vec2>(boundary.point_1))
+Portal::Portal(Math::irect boundary) : GameObject(static_cast<Math::vec2>(boundary.point_1))
 {
     AddGOComponent(new CS230::RectCollision(
         {

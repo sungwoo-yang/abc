@@ -88,7 +88,7 @@ void MainMenu::Update(double)
         switch (selected_index)
         {
             case 0: Engine::GetGameStateManager().PushState<Mode1>(); break;
-            case 1: Engine::GetGameStateManager().PushState<Mode1>(); break;
+            case 1: Engine::GetGameStateManager().PushState<Mode2>(); break;
             case 2: Engine::GetGameStateManager().Clear(); break;
         }
     }

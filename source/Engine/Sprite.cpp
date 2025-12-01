@@ -10,8 +10,8 @@
 #include "Collision.hpp"
 #include "Engine.hpp"
 #include "Logger.hpp"
-#include "TextureManager.hpp"
 #include "Path.hpp"
+#include "TextureManager.hpp"
 #include <fstream>
 
 namespace CS230
@@ -177,7 +177,7 @@ namespace CS230
 
     Math::ivec2 Sprite::GetHotSpot(int index)
     {
-        if (index < 0 && index >= static_cast<int>(hotspots.size()))
+        if (index < 0 || index >= static_cast<int>(hotspots.size()))
         {
             return { 0, 0 };
         }

@@ -24,6 +24,7 @@ Created:    March 11, 2025
 #include "Floor.hpp"
 #include "Fonts.hpp"
 #include "Gravity.hpp"
+#include "Mainmenu.hpp"
 #include "Particles.hpp"
 #include "Portal.hpp"
 #include "Robot.hpp"
@@ -100,9 +101,9 @@ void Mode1::Load()
     }));
 
     object->Add(new Portal(
-        static_cast<int>(States::MainMenu), Math::irect{
-                                                { 5700,       static_cast<int>(floor) },
-                                                { 5800, static_cast<int>(floor + 200) }
+        Math::irect{
+            { 5700,       static_cast<int>(floor) },
+            { 5800, static_cast<int>(floor + 200) }
     }));
 
     cat_ptr = new Cat({ 300, floor }, starting_floor_ptr);
@@ -131,6 +132,13 @@ void Mode1::Update(double dt)
     Engine::GetGameStateManager().GetGSComponent<CS230::Camera>()->Update(cat_ptr->GetPosition());
     Engine::GetGameStateManager().GetGSComponent<CS230::GameObjectManager>()->UpdateAll(dt);
 
+    if (cat_ptr != nullptr && cat_ptr->GetPosition().y < -500)
+    {
+        Engine::GetGameStateManager().PopState();
+        Engine::GetGameStateManager().PushState<MainMenu>();
+        return;
+    }
+
     if (Engine::GetGameStateManager().GetGSComponent<CS230::CountdownTimer>()->RemainingInt() < last_timer)
     {
         last_timer = Engine::GetGameStateManager().GetGSComponent<CS230::CountdownTimer>()->RemainingInt();
@@ -139,11 +147,14 @@ void Mode1::Update(double dt)
     if (last_timer == 0)
     {
         Engine::GetGameStateManager().PopState();
+        Engine::GetGameStateManager().PushState<MainMenu>();
+        return;
     }
 
     if (Engine::GetInput().KeyJustReleased(CS230::Input::Keys::Escape))
     {
         Engine::GetGameStateManager().PopState();
+        return;
     }
 
     update_score_text(Engine::GetGameStateManager().GetGSComponent<Score>()->Value());
@@ -177,8 +188,8 @@ void Mode1::Draw() const
 
 void Mode1::Unload()
 {
-    Engine::GetGameStateManager().GetGSComponent<Background>()->Unload();
-    Engine::GetGameStateManager().GetGSComponent<CS230::GameObjectManager>()->Unload();
+    GetGSComponent<Background>()->Unload();
+    GetGSComponent<CS230::GameObjectManager>()->Unload();
     cat_ptr = nullptr;
     ClearGSComponents();
 }
