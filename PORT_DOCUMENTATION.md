@@ -61,4 +61,4 @@ To ensure stability and performance on the web platform, the following modificat
 
 ## 6. Deployed Web Version
 You can play the web version of the project here:
-****
+**https://sungwoo-yang.github.io/CS200/Extra/cs200_fun.html**
