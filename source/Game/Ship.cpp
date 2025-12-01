@@ -11,7 +11,9 @@ Created:    March 20, 2025
 #include "Ship.hpp"
 #include "Engine/Collision.hpp"
 #include "Engine/Engine.hpp"
+#include "Engine/GameObjectManager.hpp"
 #include "Engine/GameObjectTypes.hpp"
+#include "Engine/GameStateManager.hpp"
 #include "Engine/ShowCollision.hpp"
 #include "Laser.hpp"
 #include "ScreenWrap.hpp"
@@ -83,7 +85,7 @@ void Ship::Update(double dt)
     UpdateGOComponents(dt);
 }
 
-void Ship::Draw(Math::TransformationMatrix camera_matrix)
+void Ship::Draw(const Math::TransformationMatrix& camera_matrix)
 {
     auto* sprite = GetGOComponent<CS230::Sprite>();
     if (sprite == nullptr)

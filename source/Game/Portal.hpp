@@ -29,7 +29,4 @@ public:
     }
 
     void GoToState();
-
-private:
-    int to_state;
 };

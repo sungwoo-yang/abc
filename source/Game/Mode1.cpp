@@ -11,10 +11,13 @@ Created:    March 11, 2025
 #include "Mode1.hpp"
 #include "Asteroid.hpp"
 #include "Background.hpp"
+#include "CS200/IRenderer2D.hpp"
+#include "CS200/NDC.hpp"
 #include "Cat.hpp"
 #include "Crates.hpp"
 #include "Engine/Engine.hpp"
 #include "Engine/GameObjectManager.hpp"
+#include "Engine/GameStateManager.hpp"
 #include "Engine/Particle.hpp"
 #include "Engine/ShowCollision.hpp"
 #include "Engine/Window.hpp"
@@ -128,36 +131,48 @@ void Mode1::Update(double dt)
     Engine::GetGameStateManager().GetGSComponent<CS230::Camera>()->Update(cat_ptr->GetPosition());
     Engine::GetGameStateManager().GetGSComponent<CS230::GameObjectManager>()->UpdateAll(dt);
 
-    if (Engine::GetGameStateManager().GetGSComponent<CS230::Timer>()->RemainingInt() < last_timer)
+    if (Engine::GetGameStateManager().GetGSComponent<CS230::CountdownTimer>()->RemainingInt() < last_timer)
     {
-        last_timer = Engine::GetGameStateManager().GetGSComponent<CS230::Timer>()->RemainingInt();
+        last_timer = Engine::GetGameStateManager().GetGSComponent<CS230::CountdownTimer>()->RemainingInt();
         update_timer_text(last_timer);
     }
     if (last_timer == 0)
     {
-        Engine::GetGameStateManager().SetNextGameState(static_cast<int>(States::MainMenu));
+        Engine::GetGameStateManager().PopState();
     }
 
-    if (Engine::GetInput().KeyJustReleased(CS230::Input::Keys::ESC))
+    if (Engine::GetInput().KeyJustReleased(CS230::Input::Keys::Escape))
     {
-        Engine::GetGameStateManager().SetNextGameState(static_cast<int>(States::MainMenu));
+        Engine::GetGameStateManager().PopState();
     }
 
     update_score_text(Engine::GetGameStateManager().GetGSComponent<Score>()->Value());
 }
 
-void Mode1::Draw()
+void Mode1::Draw() const
 {
     Engine::GetWindow().Clear(0x000000FF);
 
-    Math::TransformationMatrix camera_matrix = Engine::GetGameStateManager().GetGSComponent<CS230::Camera>()->GetMatrix();
+    auto& renderer = Engine::GetRenderer2D();
+    renderer.BeginScene(CS200::build_ndc_matrix(Engine::GetWindow().GetSize()));
 
     Engine::GetGameStateManager().GetGSComponent<Background>()->Draw(*Engine::GetGameStateManager().GetGSComponent<CS230::Camera>());
     Engine::GetGameStateManager().GetGSComponent<CS230::GameObjectManager>()->DrawAll(Engine::GetGameStateManager().GetGSComponent<CS230::Camera>()->GetMatrix());
-    timer_texture->Draw(Math::TranslationMatrix(Math::ivec2{ Engine::GetWindow().GetSize().x - 10 - timer_texture->GetSize().x, Engine::GetWindow().GetSize().y - timer_texture->GetSize().y - 5 }));
-    score_texture->Draw(
-        Math::TranslationMatrix(
-            Math::ivec2{ Engine::GetWindow().GetSize().x - 10 - score_texture->GetSize().x, Engine::GetWindow().GetSize().y - timer_texture->GetSize().y - score_texture->GetSize().y - 10 }));
+
+    if (timer_texture)
+    {
+        timer_texture->Draw(
+            Math::TranslationMatrix(Math::ivec2{ Engine::GetWindow().GetSize().x - 10 - timer_texture->GetSize().x, Engine::GetWindow().GetSize().y - timer_texture->GetSize().y - 5 }));
+    }
+    if (score_texture)
+    {
+        score_texture->Draw(
+            Math::TranslationMatrix(
+                Math::ivec2{ Engine::GetWindow().GetSize().x - 10 - score_texture->GetSize().x,
+                             Engine::GetWindow().GetSize().y - (timer_texture ? timer_texture->GetSize().y : 0) - score_texture->GetSize().y - 10 }));
+    }
+
+    renderer.EndScene();
 }
 
 void Mode1::Unload()

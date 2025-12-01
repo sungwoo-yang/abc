@@ -21,7 +21,7 @@ class Cat : public CS230::GameObject
 public:
     Cat(Math::vec2 start_position, GameObject* starting_floor);
     void Update(double dt) override;
-    void Draw(Math::TransformationMatrix camera_matrix) override;
+    void Draw(const Math::TransformationMatrix& camera_matrix) override;
 
     const Math::vec2& GetPosition() const
     {
