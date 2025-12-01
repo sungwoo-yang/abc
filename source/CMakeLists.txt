@@ -81,16 +81,16 @@ set(SOURCE_CODE
     main.cpp
 )
 
-add_executable(ASTAR ${SOURCE_CODE})
+add_executable(CS230_fun ${SOURCE_CODE})
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} FILES ${SOURCE_CODE})
 
-target_link_libraries(ASTAR PRIVATE project_options dependencies)
-target_include_directories(ASTAR PRIVATE .)
+target_link_libraries(CS230_fun PRIVATE project_options dependencies)
+target_include_directories(CS230_fun PRIVATE .)
 
 # Check the IS_DEVELOPER_VERSION cache variable
 # This is set by the cmake configure preset
 if (IS_DEVELOPER_VERSION)
-    target_compile_definitions(ASTAR PRIVATE DEVELOPER_VERSION)
+    target_compile_definitions(CS230_fun PRIVATE DEVELOPER_VERSION)
 endif()
 
 if(EMSCRIPTEN)
@@ -106,7 +106,7 @@ if(EMSCRIPTEN)
     # --use-preload-cache           - help with faster reloads : https://emscripten.org/docs/compiling/Deploying-Pages.html#providing-a-quick-second-time-load
     # -lembind                      - to call c++ from javascript https://emscripten.org/docs/porting/connecting_cpp_and_javascript/embind.html
     # --shell-file                  - to customize the webpage https://emscripten.org/docs/compiling/Deploying-Pages.html#build-files-and-custom-shell
-    target_link_options(ASTAR PRIVATE 
+    target_link_options(CS230_fun PRIVATE 
     -sASSERTIONS=$<$<BOOL:${IS_DEVELOPER_VERSION}>:1>$<$<NOT:$<BOOL:${IS_DEVELOPER_VERSION}>>:0>
     -sWASM=1 
     -sDISABLE_EXCEPTION_CATCHING=0 
@@ -119,10 +119,10 @@ if(EMSCRIPTEN)
     --shell-file ${CMAKE_SOURCE_DIR}/app_resources/web/index_shell.html
     )
 
-    set_target_properties(ASTAR PROPERTIES SUFFIX ".html")
+    set_target_properties(CS230_fun PROPERTIES SUFFIX ".html")
 elseif(WIN32)
 
-    target_link_options(ASTAR PRIVATE 
+    target_link_options(CS230_fun PRIVATE 
         $<IF:$<BOOL:${IS_DEVELOPER_VERSION}>,/SUBSYSTEM:CONSOLE,/SUBSYSTEM:WINDOWS>
         /ENTRY:mainCRTStartup)
 
@@ -132,6 +132,6 @@ elseif(WIN32)
         file(WRITE ${ICON_RC} "IDR_MAINFRAME ICON \"${ICON_FILE}\"\nIDI_ICON1 ICON DISCARDABLE \"${ICON_FILE}\"")
     endif()
 
-    target_sources(ASTAR PRIVATE ${ICON_RC})
+    target_sources(CS230_fun PRIVATE ${ICON_RC})
 
 endif()

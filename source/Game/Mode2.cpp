@@ -23,10 +23,10 @@ Created:    March 11, 2025
 #include "Mode2.hpp"
 #include "Particles.hpp"
 #include "Score.hpp"
+#include "Ship.hpp"
 #include "States.hpp"
-#include "ship.hpp"
 
-Mode2::Mode2() : gameover_text(nullptr), restart_text(nullptr), ship(nullptr), meteor_spawn_timer(4.5)
+Mode2::Mode2() : ship(nullptr), gameover_text(nullptr), restart_text(nullptr), meteor_spawn_timer(4.5)
 {
 }
 

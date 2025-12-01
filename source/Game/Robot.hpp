@@ -42,7 +42,6 @@ public:
     static constexpr double angry_speed   = 105.0;
 
 private:
-    bool   is_alive = true;
     Cat*   target_cat;
     double left_boundary, right_boundary;
     double speed;

@@ -30,8 +30,8 @@ CS230::Animation::Animation(const std::filesystem::path& animation_file) : curre
         in_file >> command;
         if (command == "PlayFrame")
         {
-            int   frame;
-            float target_time;
+            int    frame;
+            double target_time;
             in_file >> frame;
             in_file >> target_time;
 

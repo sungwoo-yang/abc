@@ -11,6 +11,7 @@ Created:    April 3, 2025
 #pragma once
 #include "Engine/Camera.hpp"
 #include "Engine/Texture.hpp"
+#include <vector>
 
 class Background : public CS230::Component
 {

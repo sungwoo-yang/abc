@@ -56,7 +56,7 @@ namespace OpenGL
          * - Bits 18-16: Component count (1-4 components per attribute)
          * - Bits 23-19: Attribute size in bytes (1-16 bytes)
          * - Bit 24:     Normalization flag for integer-to-float conversion
-         * - Bit 25:     Integer attribute flag (glVertexAttribIPointer vs glVertexAttribPointer)
+         * - Bit 25:     Integer attribute flag (GL::VertexAttribIPointer vs GL::VertexAttribPointer)
          * - Bits 31-26: Instancing divisor (0-63) for per-instance attributes
          *
          * This design enables both standard per-vertex attributes and advanced
@@ -69,7 +69,7 @@ namespace OpenGL
             uint8_t  ComponentCount : 3;  // Bits 18-16   (3 bits): Component count (1, 2, 3, 4)
             uint8_t  SizeBytes      : 5;  // Bits 23-19   (5 bits): Attribute size in bytes (max size is 16 - vec4)
             bool     Normalize      : 1;  // Bit  24      (1 bit) : Normalized flag (0 = false, 1 = true)
-            bool     IntAttribute   : 1;  // Bit  25      (1 bit) : Integer attribute flag (0 = use glVertexAttribPointer, 1 = use glVertexAttribIPointer)
+            bool     IntAttribute   : 1;  // Bit  25      (1 bit) : Integer attribute flag (0 = use GL::VertexAttribPointer, 1 = use GL::VertexAttribIPointer)
             uint8_t  Divisor        : 6;  // Bits 26-31   (6 bits): Divisor Value to support instancing (0-63)
 
             constexpr auto operator<=>(const Type&) const noexcept = default;
@@ -213,8 +213,8 @@ namespace OpenGL
      *
      * Attribute configuration:
      * Each buffer's layout is processed to determine the correct OpenGL vertex
-     * attribute setup, including proper use of glVertexAttribPointer() for
-     * floating-point data and glVertexAttribIPointer() for integer data.
+     * attribute setup, including proper use of GL::VertexAttribPointer() for
+     * floating-point data and GL::VertexAttribIPointer() for integer data.
      *
      * The resulting VAO can be bound once for rendering, eliminating the need
      * to reconfigure vertex attributes on every draw call.
@@ -257,8 +257,8 @@ namespace OpenGL
             // Constants for encoding
             constexpr bool NORMALIZE    = true;
             constexpr bool NO_NORMALIZE = false;
-            constexpr bool TO_INT       = true;  // Use glVertexAttribIPointer
-            constexpr bool TO_FLOAT     = false; // Use glVertexAttribPointer
+            constexpr bool TO_INT       = true;  // Use GL::VertexAttribIPointer
+            constexpr bool TO_FLOAT     = false; // Use GL::VertexAttribPointer
 
         }
 

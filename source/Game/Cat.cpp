@@ -20,7 +20,7 @@ Created:    March 20, 2025
 #include "Score.hpp"
 #include "States.hpp"
 
-Cat::Cat(Math::vec2 start_position, GameObject* starting_floor) : GameObject(start_position), standing_on(starting_floor), hurt_timer(nullptr), fall_start_y(0)
+Cat::Cat(Math::vec2 start_position, GameObject* starting_floor) : GameObject(start_position), fall_start_y(0), hurt_timer(nullptr), standing_on(starting_floor)
 {
     AddGOComponent(new CS230::Sprite("Assets/images/Cat.spt", this));
     change_state(&state_idle);
@@ -180,6 +180,7 @@ void Cat::ResolveCollision(GameObject* other_object)
             }
             break;
         case GameObjectTypes::Portal: static_cast<Portal*>(other_object)->GoToState(); break;
+        default: break;
     }
 }
 
@@ -300,11 +301,6 @@ void Cat::State_Falling::CheckExit(GameObject* object)
 
         cat->SetVelocity({ cat->GetVelocity().x, 0 });
     }
-
-    // if (cat->GetPosition().y < -500)
-    // {
-    //     Engine::GetGameStateManager().PopState();
-    // }
 }
 
 // Running
@@ -339,7 +335,7 @@ void Cat::State_Running::CheckExit(GameObject* object)
     {
         cat->change_state(&cat->state_jumping);
     }
-    else if (cat->GetVelocity().x > 0 && Engine::GetInput().KeyDown(CS230::Input::Keys::Left) || cat->GetVelocity().x < 0 && Engine::GetInput().KeyDown(CS230::Input::Keys::Right))
+    else if ((cat->GetVelocity().x > 0 && Engine::GetInput().KeyDown(CS230::Input::Keys::Left)) || (cat->GetVelocity().x < 0 && Engine::GetInput().KeyDown(CS230::Input::Keys::Right)))
     {
         cat->change_state(&cat->state_skidding);
     }

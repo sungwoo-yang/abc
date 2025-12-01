@@ -23,7 +23,6 @@ Meteor::Meteor() : Meteor(nullptr)
 Meteor::Meteor(Meteor* parent) : CS230::GameObject({ 0, 0 })
 {
     AddGOComponent(new CS230::Sprite("Assets/images/Meteor.spt", this));
-    // GetGOComponent<CS230::Sprite>()->PlayAnimation(static_cast<int>(Animations::None));
 
     if (parent == nullptr)
     {
@@ -45,7 +44,7 @@ Meteor::Meteor(Meteor* parent) : CS230::GameObject({ 0, 0 })
 
         SetPosition(spawn_pos);
         SetVelocity((center - spawn_pos).Normalize() * default_velocity);
-        SetRotation(((double)rand() / RAND_MAX) * 2 * PI);
+        SetRotation((static_cast<double>(rand()) / RAND_MAX) * 2 * PI);
 
         size = default_size;
     }

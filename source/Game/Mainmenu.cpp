@@ -26,7 +26,7 @@ void MainMenu::update_text(int selected)
     {
         unsigned int color = (i == selected) ? 0xFFFFFFFF : 0x6B8E23FF;
 
-        menu_textures[i].texture = Engine::GetFont(static_cast<int>(Fonts::Outlined)).PrintToTexture(menu_textures[i].text, color);
+        menu_textures[static_cast<size_t>(i)].texture = Engine::GetFont(static_cast<int>(Fonts::Outlined)).PrintToTexture(menu_textures[static_cast<size_t>(i)].text, color);
     }
 }
 
@@ -35,10 +35,10 @@ void MainMenu::Load()
     selected_index = 0;
     menu_textures.clear();
 
-    float      spacing = 100.0f;
+    double     spacing = 100.0;
     Math::vec2 center;
-    center.x = Engine::GetWindow().GetSize().x / 2.0f;
-    center.y = Engine::GetWindow().GetSize().y / 3.0f;
+    center.x = static_cast<double>(Engine::GetWindow().GetSize().x) / 2.0;
+    center.y = static_cast<double>(Engine::GetWindow().GetSize().y) / 3.0;
 
     menu_textures.push_back(
         {
@@ -93,10 +93,10 @@ void MainMenu::Update(double)
         }
     }
 
-    if (Engine::GetInput().KeyJustReleased(CS230::Input::Keys::Escape))
-    {
-        Engine::GetGameStateManager().Clear();
-    }
+    // if (Engine::GetInput().KeyJustReleased(CS230::Input::Keys::Escape))
+    // {
+    //     Engine::GetGameStateManager().Clear();
+    // }
 }
 
 void MainMenu::Draw() const
@@ -111,7 +111,7 @@ void MainMenu::Draw() const
         if (item.texture != nullptr)
         {
             Math::vec2 size     = Math::vec2(item.texture->GetSize());
-            Math::vec2 draw_pos = Math::vec2(item.position) - size / 2.0f;
+            Math::vec2 draw_pos = Math::vec2(item.position) - size / 2.0;
             item.texture->Draw(Math::TranslationMatrix(draw_pos));
         }
     }

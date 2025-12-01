@@ -66,7 +66,7 @@ void Asteroid::ResolveCollision(CS230::GameObject* other_object)
 {
     if (other_object->Type() == GameObjectTypes::Floor)
     {
-        CS230::RectCollision* collider = static_cast<CS230::RectCollision*>(other_object->GetGOComponent<CS230::RectCollision>());
+        CS230::RectCollision* collider = other_object->GetGOComponent<CS230::RectCollision>();
         SetPosition({ GetPosition().x, collider->WorldBoundary().Top() + 2 });
         SetVelocity({ GetVelocity().x, 0 });
         change_state(&state_landing);

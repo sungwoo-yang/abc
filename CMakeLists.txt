@@ -14,7 +14,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 #     message(STATUS "${_variableName}=${${_variableName}}")
 # endforeach()
 
-project(ASTAR)
+project(CS230_fun)
 
 include(cmake/StandardProjectSettings.cmake)
 

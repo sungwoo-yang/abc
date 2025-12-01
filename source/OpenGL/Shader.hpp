@@ -40,7 +40,7 @@ namespace OpenGL
      * - Reduces runtime overhead by avoiding repeated OpenGL queries
      *
      * The uniform location cache is particularly important for performance, as
-     * calling glGetUniformLocation() during rendering can be expensive. By
+     * calling GL::GetUniformLocation() during rendering can be expensive. By
      * pre-computing and storing these locations, uniform updates become much
      * faster during the render loop.
      *

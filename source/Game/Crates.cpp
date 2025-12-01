@@ -10,7 +10,7 @@ Created:    April 22, 2025
 
 #include "Crates.hpp"
 
-Crates::Crates(Math::vec2 position, int size) : CS230::GameObject(position) {
+Crates::Crates(Math::vec2 start_position, int size) : CS230::GameObject(start_position) {
     switch (size) {
     case 1:
         AddGOComponent(new CS230::Sprite("Assets/images/Crates1.spt", this));

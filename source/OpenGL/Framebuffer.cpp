@@ -76,17 +76,17 @@ namespace
 
             case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
                 message << "\t[Missing Attachment] No color, depth, or stencil attachment was provided.\n"
-                        << "\t-> Make sure at least one valid image is attached using glFramebufferTexture or glFramebufferRenderbuffer.\n";
+                        << "\t-> Make sure at least one valid image is attached using GL::FramebufferTexture or GL::FramebufferRenderbuffer.\n";
                 break;
 
             case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
                 message << "\t[Draw Buffer Error] Draw buffers are referencing attachments that don't exist or are incomplete.\n"
-                        << "\t-> Confirm that GL_COLOR_ATTACHMENTx exists for each buffer in glDrawBuffers().\n";
+                        << "\t-> Confirm that GL_COLOR_ATTACHMENTx exists for each buffer in GL::DrawBuffers().\n";
                 break;
 
             case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
-                message << "\t[Read Buffer Error] Read buffer (glReadBuffer) is referencing an incomplete or missing attachment.\n"
-                        << "\t-> Check if glReadBuffer is targeting an attachment that's properly set up.\n";
+                message << "\t[Read Buffer Error] Read buffer (GL::ReadBuffer) is referencing an incomplete or missing attachment.\n"
+                        << "\t-> Check if GL::ReadBuffer is targeting an attachment that's properly set up.\n";
                 break;
 
             case GL_FRAMEBUFFER_UNSUPPORTED:

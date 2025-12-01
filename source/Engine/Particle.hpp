@@ -22,7 +22,7 @@ namespace CS230
             return life > 0;
         }
 
-        GameObjectTypes Type()
+        GameObjectTypes Type() override
         {
             return GameObjectTypes::Particle;
         }

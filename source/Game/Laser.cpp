@@ -13,7 +13,7 @@ Created:    May 29, 2025
 #include "Engine/Sprite.hpp"
 #include "Engine/Window.hpp"
 
-Laser::Laser(Math::vec2 pos, double rot, Math::vec2 scale, Math::vec2 vel) : GameObject(pos, rot, scale)
+Laser::Laser(Math::vec2 pos, double rot, Math::vec2 sc, Math::vec2 vel) : GameObject(pos, rot, sc)
 {
     SetVelocity(vel);
     AddGOComponent(new CS230::Sprite("Assets/images/Laser.spt", this));

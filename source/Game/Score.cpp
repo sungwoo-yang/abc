@@ -1,4 +1,4 @@
-#include "score.hpp"
+#include "Score.hpp"
 
 void Score::Add(int amount)
 {

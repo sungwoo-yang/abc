@@ -34,6 +34,11 @@ namespace CS230
 
         mGameStateStack.back()->Update(dt);
 
+        if (mGameStateStack.empty())
+        {
+            return;
+        }
+
         GameObjectManager* gom = mGameStateStack.back()->GetGSComponent<GameObjectManager>();
         if (gom != nullptr)
         {
@@ -51,6 +56,11 @@ namespace CS230
 
     void GameStateManager::DrawImGui()
     {
+        if (mGameStateStack.empty())
+        {
+            return;
+        }
+
         mGameStateStack.back()->DrawImGui();
     }
 
