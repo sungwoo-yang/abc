@@ -50,7 +50,7 @@ namespace CS230
         std::shared_ptr<Texture> texture = nullptr;
 
         std::vector<Math::ivec2> hotspots;
-        int                      current_animation;
+        int                      current_animation = 0;
         Math::ivec2              frame_size;
         std::vector<Math::ivec2> frame_texels;
         std::vector<Animation*>  animations;

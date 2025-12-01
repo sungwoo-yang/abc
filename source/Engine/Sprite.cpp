@@ -158,14 +158,13 @@ namespace CS230
             }
             in_file >> text;
         }
-        if (frame_texels.empty() == true)
-        {
-            frame_texels.push_back({ 0, 0 });
-        }
-
         if (animations.empty())
         {
             animations.push_back(new Animation());
+            PlayAnimation(0);
+        }
+        else
+        {
             PlayAnimation(0);
         }
     }
@@ -177,7 +176,7 @@ namespace CS230
 
     Math::ivec2 Sprite::GetHotSpot(int index)
     {
-        if (index < 0 || index >= static_cast<int>(hotspots.size()))
+        if (index < 0 && index >= static_cast<int>(hotspots.size()))
         {
             return { 0, 0 };
         }

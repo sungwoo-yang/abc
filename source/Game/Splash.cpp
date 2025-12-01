@@ -48,5 +48,10 @@ void Splash::Draw() const
 {
     Engine::GetWindow().Clear(UINT_MAX);
 
+    auto& renderer = Engine::GetRenderer2D();
+    renderer.BeginScene(CS200::build_ndc_matrix(Engine::GetWindow().GetSize()));
+
     texture->Draw(Math::TranslationMatrix({ (Engine::GetWindow().GetSize() - texture->GetSize()) / 2.0 }));
+
+    renderer.EndScene();
 }
