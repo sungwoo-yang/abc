@@ -1,0 +1,134 @@
+
+====== INSERTS BACK =============================
+vector 1 formatted:
+   0   0   0   1   0   0   4   0   0   9   0   0  16   0   0  25   0   0  36   0   0  49   0   0  64   0   0  81   0   0 100   0   0 121   0   0 144   0   0 169   0   0 196   0   0 225   0   0 256   0   0 289   0   0 324   0   0 361   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+vector 1 raw:
+1 at pos 3, 4 at pos 6, 9 at pos 9, 16 at pos 12, 25 at pos 15, 36 at pos 18, 49 at pos 21, 64 at pos 24, 81 at pos 27, 100 at pos 30, 121 at pos 33, 144 at pos 36, 169 at pos 39, 196 at pos 42, 225 at pos 45, 256 at pos 48, 289 at pos 51, 324 at pos 54, 361 at pos 57, 
+
+====== INSERTS BACK =============================
+vector 2 formatted:
+   0  19  18  17  16  15  14  13  12  11  10   9   8   7   6   5   4   3   2   1
+vector 2 raw:
+19 at pos 1, 18 at pos 2, 17 at pos 3, 16 at pos 4, 15 at pos 5, 14 at pos 6, 13 at pos 7, 12 at pos 8, 11 at pos 9, 10 at pos 10, 9 at pos 11, 8 at pos 12, 7 at pos 13, 6 at pos 14, 5 at pos 15, 4 at pos 16, 3 at pos 17, 2 at pos 18, 1 at pos 19, 
+
+====== INSERTS MIDDLE =============================
+vector 3 formatted:
+   0   1 -18   3 -16   5 -14   7 -12   9 -10  11  -8  13  -6  15  -4  17  -2  19
+vector 3 raw:
+1 at pos 1, -18 at pos 2, 3 at pos 3, -16 at pos 4, 5 at pos 5, -14 at pos 6, 7 at pos 7, -12 at pos 8, 9 at pos 9, -10 at pos 10, 11 at pos 11, -8 at pos 12, 13 at pos 13, -6 at pos 14, 15 at pos 15, -4 at pos 16, 17 at pos 17, -2 at pos 18, 19 at pos 19, 
+
+====== DELETE FRONT ====================
+vector 2 formatted:
+   1   2   3   4   5
+vector 2 raw:
+1 at pos 0, 2 at pos 1, 3 at pos 2, 4 at pos 3, 5 at pos 4, 
+vector 2 formatted:
+   0   2   3   4   5
+vector 2 raw:
+2 at pos 1, 3 at pos 2, 4 at pos 3, 5 at pos 4, 
+
+====== DELETE BACK ====================
+vector 2 formatted:
+   1   2   3   4   5
+vector 2 raw:
+1 at pos 0, 2 at pos 1, 3 at pos 2, 4 at pos 3, 5 at pos 4, 
+vector 2 formatted:
+   1   2   3   4   0
+vector 2 raw:
+1 at pos 0, 2 at pos 1, 3 at pos 2, 4 at pos 3, 
+
+====== DELETE MIDDLE ====================
+vector 2 formatted:
+   1   2   3   4   5
+vector 2 raw:
+1 at pos 0, 2 at pos 1, 3 at pos 2, 4 at pos 3, 5 at pos 4, 
+vector 2 formatted:
+   1   2   0   4   5
+vector 2 raw:
+1 at pos 0, 2 at pos 1, 4 at pos 3, 5 at pos 4, 
+
+==== SCALAR MULTIPLICATION =================
+vector pE1 formatted:
+   0   1   4   9  16  25  36  49  64  81 100 121 144 169 196 225 256 289 324 361
+vector pE2 formatted:
+   0   0  19   0  18   0  17   0  16   0  15   0  14   0  13   0  12   0  11   0  10   0   9   0   8   0   7   0   6   0   5   0   4   0   3   0   2   0   1   0
+vector pE3 formatted:
+   0   0   1   0   0 -18   3   0   0 -16   5   0   0 -14   7   0   0 -12   9   0   0 -10  11   0   0  -8  13   0   0  -6  15   0   0  -4  17   0   0  -2  19   0
+scalar product pE1 and pE2 = 14700
+scalar product pE2 and pE3 = 670
+scalar product pE3 and pE1 = -2680
+scalar product pE1 and pE1 = 562666
+
+==== SCALAR MULTIPLICATION 2 =================
+scalar product pE1 and pE2 = 4050
+scalar product pE2 and pE1 = 4050
+scalar product pE1 and pE1 = 562666
+
+==== VECTOR ADDITION =================
+vector pE1 formatted:
+   0   1   4   9  16  25  36  49  64  81 100 121 144 169 196 225 256 289 324 361
+vector pE2 formatted:
+   0   0   9   0   8   0   7   0   6   0   5   0   4   0   3   0   2   0   1   0
+vector pE3 formatted:
+   0   0   0   0   1  -4   0   0   0   0   0   0   3  -2   0   0   0   0   0   0
+pE1 + pE2 = 
+   0   1  13   9  24  25  43  49  70  81 105 121 148 169 199 225 258 289 325 361
+pE2 + pE3 = 
+   0   0   9   0   9  -4   7   0   6   0   5   0   7  -2   3   0   2   0   1   0
+pE3 + pE1 = 
+   0   1   4   9  17  21  36  49  64  81 100 121 147 167 196 225 256 289 324 361
+pE1 + pE3 = 
+   0   1   4   9  17  21  36  49  64  81 100 121 147 167 196 225 256 289 324 361
+
+==== VECTOR ADDITION 2 =================
+pE1 + pE2 = 
+raw:
+1 at pos 1000, 3 at pos 2000, 3 at pos 3000, 6 at pos 4000, 5 at pos 5000, 9 at pos 6000, 7 at pos 7000, 12 at pos 8000, 9 at pos 9000, 
+pE2 + pE1 = 
+raw:
+1 at pos 1000, 3 at pos 2000, 3 at pos 3000, 6 at pos 4000, 5 at pos 5000, 9 at pos 6000, 7 at pos 7000, 12 at pos 8000, 9 at pos 9000, 
+pE1 + pE1 = 
+raw:
+2 at pos 2000, 4 at pos 4000, 6 at pos 6000, 8 at pos 8000, 
+
+==== VECTOR ADDITION (ZEROES) ========
+vector pE1 formatted:
+   0   1   4   9  16  25  36  49  64  81 100 121 144 169 196 225 256 289 324 361
+vector pE2 formatted:
+   0  -1  -4  -9 -16 -25 -36 -49 -64 -81-100-121-144-169-196-225-256-289-324-361
+pE1 + pE2 = 
+   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+raw:
+
+pE2 + pE1 = 
+   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+raw:
+
+
+==== TESTING FIND ========
+   0   0   4   0  16   0  36   0  64   0 100   0 144   0 196   0 256   0 324   0
+print vector using get - very inefficient!!!
+index 0, value 0
+index 1, value 0
+index 2, value 4
+index 3, value 0
+index 4, value 16
+index 5, value 0
+index 6, value 36
+index 7, value 0
+index 8, value 64
+index 9, value 0
+index 10, value 100
+index 11, value 0
+index 12, value 144
+index 13, value 0
+index 14, value 196
+index 15, value 0
+index 16, value 256
+index 17, value 0
+index 18, value 324
+index 19, value 0
+
+==== TESTING FIND 2 ========
+5 at pos 10000, 
+value 5 at position 10000
