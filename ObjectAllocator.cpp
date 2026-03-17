@@ -1,0 +1,452 @@
+#include "ObjectAllocator.h"
+#include <cstring>
+
+ObjectAllocator::ObjectAllocator(size_t ObjectSize, const OAConfig &config) : PageList_(nullptr), FreeList_(nullptr), oaconfig(config)
+{
+    oastats.ObjectSize_ = ObjectSize;
+
+    size_t HBlockSize = oaconfig.HBlockInfo_.size_;
+    size_t BlockSize = HBlockSize + (oaconfig.PadBytes_ * 2) + oastats.ObjectSize_;
+
+    if (oaconfig.Alignment_ > 1)
+    {
+        size_t overhead = sizeof(void *) + HBlockSize + oaconfig.PadBytes_;
+        if (overhead % oaconfig.Alignment_ != 0)
+        {
+            oaconfig.LeftAlignSize_ = oaconfig.Alignment_ - (overhead % oaconfig.Alignment_);
+        }
+
+        if (BlockSize % oaconfig.Alignment_ != 0)
+        {
+            oaconfig.InterAlignSize_ = oaconfig.Alignment_ - (BlockSize % oaconfig.Alignment_);
+        }
+    }
+
+    oastats.PageSize_ = sizeof(void *) + oaconfig.LeftAlignSize_ + (oaconfig.ObjectsPerPage_ * BlockSize);
+    if (oaconfig.ObjectsPerPage_ > 1)
+    {
+        oastats.PageSize_ += (oaconfig.ObjectsPerPage_ - 1) * oaconfig.InterAlignSize_;
+    }
+
+    if (oaconfig.UseCPPMemManager_)
+    {
+        return;
+    }
+
+    AllocateNewPage();
+}
+
+ObjectAllocator::~ObjectAllocator()
+{
+    if (oaconfig.UseCPPMemManager_)
+    {
+        return;
+    }
+
+    GenericObject *current_page = PageList_;
+
+    while (current_page != nullptr)
+    {
+        GenericObject *next_page = current_page->Next;
+
+        if (oaconfig.HBlockInfo_.type_ == OAConfig::hbExternal)
+        {
+            char *block_ptr = static_cast<char *>(static_cast<void *>(current_page)) + sizeof(void *) + oaconfig.LeftAlignSize_;
+            size_t BlockSize = oaconfig.HBlockInfo_.size_ + (oaconfig.PadBytes_ * 2) + oastats.ObjectSize_;
+
+            for (unsigned i = 0; i < oaconfig.ObjectsPerPage_; ++i)
+            {
+                char *data_ptr = block_ptr + oaconfig.HBlockInfo_.size_ + oaconfig.PadBytes_;
+                MemBlockInfo **info_ptr = static_cast<MemBlockInfo **>(static_cast<void *>(data_ptr - oaconfig.PadBytes_ - oaconfig.HBlockInfo_.size_));
+
+                if (*info_ptr)
+                {
+                    if ((*info_ptr)->label)
+                    {
+                        delete[] (*info_ptr)->label;
+                    }
+                    delete *info_ptr;
+                }
+                block_ptr += BlockSize + oaconfig.InterAlignSize_;
+            }
+        }
+
+        char *page_to_delete = static_cast<char *>(static_cast<void *>(current_page));
+        delete[] page_to_delete;
+        current_page = next_page;
+    }
+}
+
+void *ObjectAllocator::Allocate(const char *label)
+{
+    if (oaconfig.UseCPPMemManager_)
+    {
+        try
+        {
+            char *ptr = new char[oastats.ObjectSize_];
+            oastats.Allocations_++;
+            oastats.ObjectsInUse_++;
+            if (oastats.ObjectsInUse_ > oastats.MostObjects_)
+                oastats.MostObjects_ = oastats.ObjectsInUse_;
+            return ptr;
+        }
+        catch (const std::bad_alloc &)
+        {
+            throw OAException(OAException::E_NO_MEMORY, "C++ new failed.");
+        }
+    }
+
+    if (FreeList_ == nullptr)
+    {
+        if (oaconfig.MaxPages_ != 0 && oastats.PagesInUse_ >= oaconfig.MaxPages_)
+        {
+            throw OAException(OAException::E_NO_MEMORY, "ObjectAllocator: Maximum pages reached.");
+        }
+
+        AllocateNewPage();
+    }
+
+    GenericObject *allocated_block = FreeList_;
+    FreeList_ = FreeList_->Next;
+
+    oastats.FreeObjects_--;
+    oastats.ObjectsInUse_++;
+    oastats.Allocations_++;
+    if (oastats.ObjectsInUse_ > oastats.MostObjects_)
+    {
+        oastats.MostObjects_ = oastats.ObjectsInUse_;
+    }
+
+    char *data_ptr = static_cast<char *>(static_cast<void *>(allocated_block));
+
+    if (oaconfig.HBlockInfo_.type_ != OAConfig::hbNone)
+    {
+        char *header_ptr = data_ptr - oaconfig.PadBytes_ - oaconfig.HBlockInfo_.size_;
+
+        if (oaconfig.HBlockInfo_.type_ == OAConfig::hbBasic)
+        {
+            unsigned *alloc_num = static_cast<unsigned *>(static_cast<void *>(header_ptr));
+            *alloc_num = oastats.Allocations_;
+            char *flag = header_ptr + sizeof(unsigned);
+            *flag = 1;
+        }
+        else if (oaconfig.HBlockInfo_.type_ == OAConfig::hbExtended)
+        {
+            unsigned *alloc_num = static_cast<unsigned *>(static_cast<void *>(header_ptr));
+            *alloc_num = oastats.Allocations_;
+            unsigned short *use_counter = static_cast<unsigned short *>(static_cast<void *>(header_ptr + sizeof(unsigned)));
+            (*use_counter)++;
+            char *flag = header_ptr + sizeof(unsigned) + sizeof(unsigned short);
+            *flag = 1;
+        }
+        else if (oaconfig.HBlockInfo_.type_ == OAConfig::hbExternal)
+        {
+            MemBlockInfo *info = *static_cast<MemBlockInfo **>(static_cast<void *>(header_ptr));
+            info->in_use = true;
+            info->alloc_num = oastats.Allocations_;
+            if (label)
+            {
+                info->label = new char[std::strlen(label) + 1];
+                std::strcpy(info->label, label);
+            }
+        }
+    }
+
+    if (oaconfig.DebugOn_)
+    {
+        std::memset(data_ptr, ALLOCATED_PATTERN, oastats.ObjectSize_);
+    }
+
+    return data_ptr;
+}
+
+void ObjectAllocator::Free(void *Object)
+{
+    if (oaconfig.UseCPPMemManager_)
+    {
+        char *ptr = static_cast<char *>(Object);
+        delete[] ptr;
+
+        oastats.ObjectsInUse_--;
+        oastats.Deallocations_++;
+        return;
+    }
+
+    char *data_ptr = static_cast<char *>(Object);
+
+    if (oaconfig.DebugOn_)
+    {
+        bool valid_boundary = false;
+        GenericObject *current_page = PageList_;
+        size_t BlockSize = oaconfig.HBlockInfo_.size_ + (oaconfig.PadBytes_ * 2) + oastats.ObjectSize_;
+
+        while (current_page)
+        {
+            char *page_start = static_cast<char *>(static_cast<void *>(current_page));
+            char *page_end = page_start + oastats.PageSize_;
+            if (data_ptr > page_start && data_ptr < page_end)
+            {
+                size_t offset = data_ptr - (page_start + sizeof(void *) + oaconfig.LeftAlignSize_ + oaconfig.HBlockInfo_.size_ + oaconfig.PadBytes_);
+                if (offset % (BlockSize + oaconfig.InterAlignSize_) == 0)
+                {
+                    valid_boundary = true;
+                    break;
+                }
+            }
+
+            current_page = current_page->Next;
+        }
+        if (!valid_boundary)
+        {
+            throw OAException(OAException::E_BAD_BOUNDARY, "Invalid boundary.");
+        }
+
+        GenericObject *free_ptr = FreeList_;
+        while (free_ptr)
+        {
+            if (static_cast<char *>(static_cast<void *>(free_ptr)) == data_ptr)
+            {
+                throw OAException(OAException::E_MULTIPLE_FREE, "Multiple free detected.");
+            }
+            free_ptr = free_ptr->Next;
+        }
+
+        if (oaconfig.PadBytes_ > 0)
+        {
+            char *left_pad = data_ptr - oaconfig.PadBytes_;
+            char *right_pad = data_ptr - oastats.ObjectSize_;
+            for (unsigned i = 0; i < oaconfig.PadBytes_; i++)
+            {
+                if (static_cast<unsigned char>(left_pad[i]) != PAD_PATTERN || static_cast<unsigned char>(right_pad[i]) != PAD_PATTERN)
+                {
+                    throw OAException(OAException::E_CORRUPTED_BLOCK, "Pad bytes corrupted.");
+                }
+            }
+        }
+    }
+
+    if (oaconfig.HBlockInfo_.type_ != OAConfig::hbNone)
+    {
+        char *header_ptr = data_ptr - oaconfig.PadBytes_ - oaconfig.HBlockInfo_.size_;
+        if (oaconfig.HBlockInfo_.type_ == OAConfig::hbBasic)
+        {
+            char *flag = header_ptr + sizeof(unsigned);
+            *flag = 0;
+            unsigned *alloc_num = static_cast<unsigned *>(static_cast<void *>(header_ptr));
+            *alloc_num = 0;
+        }
+        else if (oaconfig.HBlockInfo_.type_ == OAConfig::hbExtended)
+        {
+            char *flag = header_ptr + sizeof(unsigned) + sizeof(unsigned short);
+            *flag = 0;
+            unsigned *alloc_num = static_cast<unsigned *>(static_cast<void *>(header_ptr));
+            *alloc_num;
+        }
+        else if (oaconfig.HBlockInfo_.type_ == OAConfig::hbExternal)
+        {
+            MemBlockInfo *info = *static_cast<MemBlockInfo **>(static_cast<void *>(header_ptr));
+            info->in_use = false;
+            info->alloc_num = 0;
+            if (info->label)
+            {
+                delete[] info->label;
+                info->label = nullptr;
+            }
+        }
+    }
+
+    if (oaconfig.DebugOn_)
+    {
+        std::memset(data_ptr, FREED_PATTERN, oastats.ObjectSize_);
+    }
+
+    GenericObject *pObj = static_cast<GenericObject *>(Object);
+    pObj->Next = FreeList_;
+    FreeList_ = pObj;
+
+    oastats.ObjectsInUse_--;
+    oastats.FreeObjects_++;
+    oastats.Deallocations_++;
+}
+
+unsigned ObjectAllocator::FreeEmptyPages()
+{
+    if (oaconfig.UseCPPMemManager_)
+        return 0;
+    return 0;
+}
+
+unsigned ObjectAllocator::DumpMemoryInUse(DUMPCALLBACK fn) const
+{
+    unsigned count = 0;
+    GenericObject *page = PageList_;
+    size_t BlockSize = oaconfig.HBlockInfo_.size_ + (oaconfig.PadBytes_ * 2) + oastats.ObjectSize_;
+
+    while (page)
+    {
+        char *block_ptr = static_cast<char *>(static_cast<void *>(page)) + sizeof(void *) + oaconfig.LeftAlignSize_;
+        for (unsigned i = 0; i < oaconfig.ObjectsPerPage_; i++)
+        {
+            char *data_ptr = block_ptr + oaconfig.HBlockInfo_.size_ + oaconfig.PadBytes_;
+            bool in_use = false;
+
+            if (oaconfig.HBlockInfo_.type_ == OAConfig::hbBasic)
+            {
+                in_use = *(data_ptr - oaconfig.PadBytes_ - oaconfig.HBlockInfo_.size_ + sizeof(unsigned)) == 1;
+            }
+            else if (oaconfig.HBlockInfo_.type_ == OAConfig::hbExtended)
+            {
+                in_use = *(data_ptr - oaconfig.PadBytes_ - oaconfig.HBlockInfo_.size_ + sizeof(unsigned) + sizeof(unsigned short)) == 1;
+            }
+            else if (oaconfig.HBlockInfo_.type_ == OAConfig::hbExternal)
+            {
+                MemBlockInfo *info = *static_cast<MemBlockInfo **>(static_cast<void *>(data_ptr - oaconfig.PadBytes_ - oaconfig.HBlockInfo_.size_));
+                in_use = info->in_use;
+            }
+            else
+            {
+                in_use = (static_cast<unsigned char>(*data_ptr) == ALLOCATED_PATTERN);
+            }
+
+            if (in_use)
+            {
+                fn(data_ptr, oastats.ObjectSize_);
+                count++;
+            }
+            block_ptr += BlockSize + oaconfig.InterAlignSize_;
+        }
+
+        page = page->Next;
+    }
+
+    return count;
+}
+
+unsigned ObjectAllocator::ValidatePages(VALIDATECALLBACK fn) const
+{
+    if (oaconfig.PadBytes_ == 0 || !oaconfig.DebugOn_)
+        return 0;
+
+    unsigned count = 0;
+    GenericObject *page = PageList_;
+    size_t BlockSize = oaconfig.HBlockInfo_.size_ + (oaconfig.PadBytes_ * 2) + oastats.ObjectSize_;
+
+    while (page)
+    {
+        char *block_ptr = static_cast<char *>(static_cast<void *>(page)) + sizeof(void *) + oaconfig.LeftAlignSize_;
+        for (unsigned i = 0; i < oaconfig.ObjectsPerPage_; i++)
+        {
+            char *data_ptr = block_ptr + oaconfig.HBlockInfo_.size_ + oaconfig.PadBytes_;
+            char *left_pad = data_ptr - oaconfig.PadBytes_;
+            char *right_pad = data_ptr + oastats.ObjectSize_;
+            bool corrupted = false;
+
+            for (unsigned p = 0; p < oaconfig.PadBytes_; p++)
+            {
+                if (static_cast<unsigned char>(left_pad[p]) != PAD_PATTERN ||
+                    static_cast<unsigned char>(right_pad[p]) != PAD_PATTERN)
+                {
+                    corrupted = true;
+                    break;
+                }
+            }
+            if (corrupted)
+            {
+                fn(data_ptr, oastats.ObjectSize_);
+                count++;
+            }
+            block_ptr += BlockSize + oaconfig.InterAlignSize_;
+        }
+        page = page->Next;
+    }
+    return count;
+}
+
+bool ObjectAllocator::ImplementedExtraCredit()
+{
+    return true;
+}
+
+void ObjectAllocator::SetDebugState(bool State)
+{
+    oaconfig.DebugOn_ = State;
+}
+
+const void *ObjectAllocator::GetFreeList() const
+{
+    return FreeList_;
+}
+
+const void *ObjectAllocator::GetPageList() const
+{
+    return PageList_;
+}
+
+OAConfig ObjectAllocator::GetConfig() const
+{
+    return oaconfig;
+}
+
+OAStats ObjectAllocator::GetStats() const
+{
+    return oastats;
+}
+
+void ObjectAllocator::AllocateNewPage()
+{
+    try
+    {
+        char *new_page = new char[oastats.PageSize_];
+
+        if (oaconfig.DebugOn_)
+        {
+            std::memset(new_page, UNALLOCATED_PATTERN, oastats.PageSize_);
+            if (oaconfig.LeftAlignSize_ > 0)
+            {
+                std::memset(new_page + sizeof(void *), ALIGN_PATTERN, oaconfig.LeftAlignSize_);
+            }
+        }
+
+        GenericObject *pPage = static_cast<GenericObject *>(static_cast<void *>(new_page));
+        pPage->Next = PageList_;
+        PageList_ = pPage;
+        oastats.PagesInUse_++;
+
+        size_t HBlockSize = oaconfig.HBlockInfo_.size_;
+        size_t BlockSize = HBlockSize + (oaconfig.PadBytes_ * 2) + oastats.ObjectSize_;
+        char *block_ptr = new_page + sizeof(void *) + oaconfig.LeftAlignSize_;
+
+        for (unsigned i = 0; i < oaconfig.ObjectsPerPage_; ++i)
+        {
+            char *data_ptr = block_ptr + HBlockSize + oaconfig.PadBytes_;
+
+            if (oaconfig.DebugOn_)
+            {
+                std::memset(data_ptr - oaconfig.PadBytes_, PAD_PATTERN, oaconfig.PadBytes_);
+                std::memset(data_ptr + oastats.ObjectSize_, PAD_PATTERN, oaconfig.PadBytes_);
+
+                if (i > 0 && oaconfig.InterAlignSize_ > 0)
+                {
+                    std::memset(block_ptr - oaconfig.InterAlignSize_, ALIGN_PATTERN, oaconfig.InterAlignSize_);
+                }
+            }
+
+            if (oaconfig.HBlockInfo_.type_ == OAConfig::hbExternal)
+            {
+                MemBlockInfo **info_ptr = static_cast<MemBlockInfo **>(static_cast<void *>(data_ptr - oaconfig.PadBytes_ - oaconfig.HBlockInfo_.size_));
+                *info_ptr = new MemBlockInfo{false, nullptr, 0};
+            }
+
+            GenericObject *pObj = static_cast<GenericObject *>(static_cast<void *>(data_ptr));
+            pObj->Next = FreeList_;
+            FreeList_ = pObj;
+            oastats.FreeObjects_++;
+
+            block_ptr += BlockSize + oaconfig.InterAlignSize_;
+        }
+    }
+    catch (const std::bad_alloc &)
+    {
+        throw OAException(OAException::E_NO_MEMORY, "ObjectAllocator: Out of memory.");
+    }
+}

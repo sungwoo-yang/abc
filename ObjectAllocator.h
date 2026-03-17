@@ -3,7 +3,7 @@
 #define OBJECTALLOCATORH
 //---------------------------------------------------------------------------
 
-#include <string>
+#include   <string>
 
 // If the client doesn't specify these:
 static const int DEFAULT_OBJECTS_PER_PAGE = 4;  
@@ -285,7 +285,11 @@ class ObjectAllocator
     GenericObject *PageList_; //!< the beginning of the list of pages
     GenericObject *FreeList_; //!< the beginning of the list of objects
     
-    // Lots of other private stuff... 
+    // Lots of other private stuff...
+    OAStats oastats;
+    OAConfig oaconfig;
+
+    void AllocateNewPage();
 };
 
 #endif
