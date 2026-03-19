@@ -1,3 +1,8 @@
+// Name       : Sungwoo Yang
+// Assignment : ObjectAllocator
+// Course     : CS280 Data Structures
+// Term & Year: 2026 Spring
+
 #include "ObjectAllocator.h"
 #include <cstring>
 
@@ -51,13 +56,13 @@ ObjectAllocator::~ObjectAllocator()
 
         if (oaconfig.HBlockInfo_.type_ == OAConfig::hbExternal)
         {
-            char *block_ptr = static_cast<char *>(static_cast<void *>(current_page)) + sizeof(void *) + oaconfig.LeftAlignSize_;
+            char *block_ptr = reinterpret_cast<char *>(current_page) + sizeof(void *) + oaconfig.LeftAlignSize_;
             size_t BlockSize = oaconfig.HBlockInfo_.size_ + (oaconfig.PadBytes_ * 2) + oastats.ObjectSize_;
 
             for (unsigned i = 0; i < oaconfig.ObjectsPerPage_; ++i)
             {
                 char *data_ptr = block_ptr + oaconfig.HBlockInfo_.size_ + oaconfig.PadBytes_;
-                MemBlockInfo **info_ptr = static_cast<MemBlockInfo **>(static_cast<void *>(data_ptr - oaconfig.PadBytes_ - oaconfig.HBlockInfo_.size_));
+                MemBlockInfo **info_ptr = reinterpret_cast<MemBlockInfo **>(data_ptr - oaconfig.PadBytes_ - oaconfig.HBlockInfo_.size_);
 
                 if (*info_ptr)
                 {
@@ -71,7 +76,7 @@ ObjectAllocator::~ObjectAllocator()
             }
         }
 
-        char *page_to_delete = static_cast<char *>(static_cast<void *>(current_page));
+        char *page_to_delete = reinterpret_cast<char *>(current_page);
         delete[] page_to_delete;
         current_page = next_page;
     }
@@ -117,7 +122,7 @@ void *ObjectAllocator::Allocate(const char *label)
         oastats.MostObjects_ = oastats.ObjectsInUse_;
     }
 
-    char *data_ptr = static_cast<char *>(static_cast<void *>(allocated_block));
+    char *data_ptr = reinterpret_cast<char *>(allocated_block);
 
     if (oaconfig.HBlockInfo_.type_ != OAConfig::hbNone)
     {
@@ -125,7 +130,7 @@ void *ObjectAllocator::Allocate(const char *label)
 
         if (oaconfig.HBlockInfo_.type_ == OAConfig::hbBasic)
         {
-            unsigned *alloc_num = static_cast<unsigned *>(static_cast<void *>(header_ptr));
+            unsigned *alloc_num = reinterpret_cast<unsigned *>(header_ptr);
             *alloc_num = oastats.Allocations_;
             char *flag = header_ptr + sizeof(unsigned);
             *flag = 1;
@@ -134,10 +139,10 @@ void *ObjectAllocator::Allocate(const char *label)
         {
             size_t add_size = oaconfig.HBlockInfo_.additional_;
 
-            unsigned short *use_counter = static_cast<unsigned short *>(static_cast<void *>(header_ptr + add_size));
+            unsigned short *use_counter = reinterpret_cast<unsigned short *>(header_ptr + add_size);
             (*use_counter)++;
 
-            unsigned *alloc_num = static_cast<unsigned *>(static_cast<void *>(header_ptr + add_size + sizeof(unsigned short)));
+            unsigned *alloc_num = reinterpret_cast<unsigned *>(header_ptr + add_size + sizeof(unsigned short));
             *alloc_num = oastats.Allocations_;
 
             char *flag = header_ptr + add_size + sizeof(unsigned short) + sizeof(unsigned);
@@ -145,7 +150,7 @@ void *ObjectAllocator::Allocate(const char *label)
         }
         else if (oaconfig.HBlockInfo_.type_ == OAConfig::hbExternal)
         {
-            MemBlockInfo *info = *static_cast<MemBlockInfo **>(static_cast<void *>(header_ptr));
+            MemBlockInfo *info = *reinterpret_cast<MemBlockInfo **>(header_ptr);
             info->in_use = true;
             info->alloc_num = oastats.Allocations_;
             if (label)
@@ -186,7 +191,7 @@ void ObjectAllocator::Free(void *Object)
 
         while (current_page)
         {
-            char *page_start = static_cast<char *>(static_cast<void *>(current_page));
+            char *page_start = reinterpret_cast<char *>(current_page);
             char *page_end = page_start + oastats.PageSize_;
             if (data_ptr > page_start && data_ptr < page_end)
             {
@@ -208,7 +213,7 @@ void ObjectAllocator::Free(void *Object)
         GenericObject *free_ptr = FreeList_;
         while (free_ptr)
         {
-            if (static_cast<char *>(static_cast<void *>(free_ptr)) == data_ptr)
+            if (reinterpret_cast<char *>(free_ptr) == data_ptr)
             {
                 throw OAException(OAException::E_MULTIPLE_FREE, "Multiple free detected.");
             }
@@ -236,14 +241,14 @@ void ObjectAllocator::Free(void *Object)
         {
             char *flag = header_ptr + sizeof(unsigned);
             *flag = 0;
-            unsigned *alloc_num = static_cast<unsigned *>(static_cast<void *>(header_ptr));
+            unsigned *alloc_num = reinterpret_cast<unsigned *>(header_ptr);
             *alloc_num = 0;
         }
         else if (oaconfig.HBlockInfo_.type_ == OAConfig::hbExtended)
         {
             size_t add_size = oaconfig.HBlockInfo_.additional_;
 
-            unsigned *alloc_num = static_cast<unsigned *>(static_cast<void *>(header_ptr + add_size + sizeof(unsigned short)));
+            unsigned *alloc_num = reinterpret_cast<unsigned *>(header_ptr + add_size + sizeof(unsigned short));
             *alloc_num = 0;
 
             char *flag = header_ptr + add_size + sizeof(unsigned short) + sizeof(unsigned);
@@ -251,7 +256,7 @@ void ObjectAllocator::Free(void *Object)
         }
         else if (oaconfig.HBlockInfo_.type_ == OAConfig::hbExternal)
         {
-            MemBlockInfo *info = *static_cast<MemBlockInfo **>(static_cast<void *>(header_ptr));
+            MemBlockInfo *info = *reinterpret_cast<MemBlockInfo **>(header_ptr);
             info->in_use = false;
             info->alloc_num = 0;
             if (info->label)
@@ -291,7 +296,7 @@ unsigned ObjectAllocator::DumpMemoryInUse(DUMPCALLBACK fn) const
 
     while (page)
     {
-        char *block_ptr = static_cast<char *>(static_cast<void *>(page)) + sizeof(void *) + oaconfig.LeftAlignSize_;
+        char *block_ptr = reinterpret_cast<char *>(page) + sizeof(void *) + oaconfig.LeftAlignSize_;
         for (unsigned i = 0; i < oaconfig.ObjectsPerPage_; i++)
         {
             char *data_ptr = block_ptr + oaconfig.HBlockInfo_.size_ + oaconfig.PadBytes_;
@@ -307,7 +312,7 @@ unsigned ObjectAllocator::DumpMemoryInUse(DUMPCALLBACK fn) const
             }
             else if (oaconfig.HBlockInfo_.type_ == OAConfig::hbExternal)
             {
-                MemBlockInfo *info = *static_cast<MemBlockInfo **>(static_cast<void *>(data_ptr - oaconfig.PadBytes_ - oaconfig.HBlockInfo_.size_));
+                MemBlockInfo *info = *reinterpret_cast<MemBlockInfo **>(data_ptr - oaconfig.PadBytes_ - oaconfig.HBlockInfo_.size_);
                 in_use = info->in_use;
             }
             else
@@ -340,7 +345,7 @@ unsigned ObjectAllocator::ValidatePages(VALIDATECALLBACK fn) const
 
     while (page)
     {
-        char *block_ptr = static_cast<char *>(static_cast<void *>(page)) + sizeof(void *) + oaconfig.LeftAlignSize_;
+        char *block_ptr = reinterpret_cast<char *>(page) + sizeof(void *) + oaconfig.LeftAlignSize_;
         for (unsigned i = 0; i < oaconfig.ObjectsPerPage_; i++)
         {
             char *data_ptr = block_ptr + oaconfig.HBlockInfo_.size_ + oaconfig.PadBytes_;
@@ -371,7 +376,7 @@ unsigned ObjectAllocator::ValidatePages(VALIDATECALLBACK fn) const
 
 bool ObjectAllocator::ImplementedExtraCredit()
 {
-    return true;
+    return false;
 }
 
 void ObjectAllocator::SetDebugState(bool State)
@@ -414,7 +419,7 @@ void ObjectAllocator::AllocateNewPage()
             }
         }
 
-        GenericObject *pPage = static_cast<GenericObject *>(static_cast<void *>(new_page));
+        GenericObject *pPage = reinterpret_cast<GenericObject *>(new_page);
         pPage->Next = PageList_;
         PageList_ = pPage;
         oastats.PagesInUse_++;
@@ -445,11 +450,11 @@ void ObjectAllocator::AllocateNewPage()
 
             if (oaconfig.HBlockInfo_.type_ == OAConfig::hbExternal)
             {
-                MemBlockInfo **info_ptr = static_cast<MemBlockInfo **>(static_cast<void *>(data_ptr - oaconfig.PadBytes_ - oaconfig.HBlockInfo_.size_));
+                MemBlockInfo **info_ptr = reinterpret_cast<MemBlockInfo **>(data_ptr - oaconfig.PadBytes_ - oaconfig.HBlockInfo_.size_);
                 *info_ptr = new MemBlockInfo{false, nullptr, 0};
             }
 
-            GenericObject *pObj = static_cast<GenericObject *>(static_cast<void *>(data_ptr));
+            GenericObject *pObj = reinterpret_cast<GenericObject *>(data_ptr);
             pObj->Next = FreeList_;
             FreeList_ = pObj;
             oastats.FreeObjects_++;
