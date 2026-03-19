@@ -285,7 +285,102 @@ unsigned ObjectAllocator::FreeEmptyPages()
 {
     if (oaconfig.UseCPPMemManager_)
         return 0;
-    return 0;
+
+    unsigned freed_pages_count = 0;
+    GenericObject *current_page = PageList_;
+    GenericObject *prev_page = nullptr;
+
+    while (current_page != nullptr)
+    {
+        char *page_start = reinterpret_cast<char *>(current_page);
+        char *page_end = page_start + oastats.PageSize_;
+
+        unsigned free_blocks_in_page = 0;
+        GenericObject *free_ptr = FreeList_;
+        while (free_ptr != nullptr)
+        {
+            char *ptr = reinterpret_cast<char *>(free_ptr);
+            if (ptr > page_start && ptr < page_end)
+            {
+                free_blocks_in_page++;
+            }
+            free_ptr = free_ptr->Next;
+        }
+
+        if (free_blocks_in_page == oaconfig.ObjectsPerPage_)
+        {
+            GenericObject *curr_free = FreeList_;
+            GenericObject *prev_free = nullptr;
+
+            while (curr_free != nullptr)
+            {
+                char *ptr = reinterpret_cast<char *>(curr_free);
+                if (ptr > page_start && ptr < page_end)
+                {
+                    if (prev_free == nullptr)
+                    {
+                        FreeList_ = curr_free->Next;
+                    }
+                    else
+                    {
+                        prev_free->Next = curr_free->Next;
+                    }
+                    curr_free = curr_free->Next;
+
+                    oastats.FreeObjects_--;
+                }
+                else
+                {
+                    prev_free = curr_free;
+                    curr_free = curr_free->Next;
+                }
+            }
+
+            if (oaconfig.HBlockInfo_.type_ == OAConfig::hbExternal)
+            {
+                char *block_ptr = page_start + sizeof(void *) + oaconfig.LeftAlignSize_;
+                size_t BlockSize = oaconfig.HBlockInfo_.size_ + (oaconfig.PadBytes_ * 2) + oastats.ObjectSize_;
+
+                for (unsigned i = 0; i < oaconfig.ObjectsPerPage_; ++i)
+                {
+                    char *data_ptr = block_ptr + oaconfig.HBlockInfo_.size_ + oaconfig.PadBytes_;
+                    MemBlockInfo **info_ptr = reinterpret_cast<MemBlockInfo **>(data_ptr - oaconfig.PadBytes_ - oaconfig.HBlockInfo_.size_);
+
+                    if (*info_ptr)
+                    {
+                        if ((*info_ptr)->label)
+                        {
+                            delete[] (*info_ptr)->label;
+                        }
+                        delete *info_ptr;
+                    }
+                    block_ptr += BlockSize + oaconfig.InterAlignSize_;
+                }
+            }
+
+            GenericObject *page_to_delete = current_page;
+            if (prev_page == nullptr)
+            {
+                PageList_ = current_page->Next;
+            }
+            else
+            {
+                prev_page->Next = current_page->Next;
+            }
+            current_page = current_page->Next;
+
+            delete[] reinterpret_cast<char *>(page_to_delete);
+            oastats.PagesInUse_--;
+            freed_pages_count++;
+        }
+        else
+        {
+            prev_page = current_page;
+            current_page = current_page->Next;
+        }
+    }
+
+    return freed_pages_count;
 }
 
 unsigned ObjectAllocator::DumpMemoryInUse(DUMPCALLBACK fn) const
@@ -302,13 +397,9 @@ unsigned ObjectAllocator::DumpMemoryInUse(DUMPCALLBACK fn) const
             char *data_ptr = block_ptr + oaconfig.HBlockInfo_.size_ + oaconfig.PadBytes_;
             bool in_use = false;
 
-            if (oaconfig.HBlockInfo_.type_ == OAConfig::hbBasic)
+            if (oaconfig.HBlockInfo_.type_ == OAConfig::hbBasic || oaconfig.HBlockInfo_.type_ == OAConfig::hbExtended)
             {
-                in_use = *(data_ptr - oaconfig.PadBytes_ - oaconfig.HBlockInfo_.size_ + sizeof(unsigned)) == 1;
-            }
-            else if (oaconfig.HBlockInfo_.type_ == OAConfig::hbExtended)
-            {
-                in_use = *(data_ptr - oaconfig.PadBytes_ - oaconfig.HBlockInfo_.size_ + sizeof(unsigned) + sizeof(unsigned short)) == 1;
+                in_use = *(data_ptr - oaconfig.PadBytes_ - 1) == 1;
             }
             else if (oaconfig.HBlockInfo_.type_ == OAConfig::hbExternal)
             {
@@ -376,7 +467,7 @@ unsigned ObjectAllocator::ValidatePages(VALIDATECALLBACK fn) const
 
 bool ObjectAllocator::ImplementedExtraCredit()
 {
-    return false;
+    return true;
 }
 
 void ObjectAllocator::SetDebugState(bool State)
