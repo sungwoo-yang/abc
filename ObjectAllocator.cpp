@@ -13,12 +13,12 @@ ObjectAllocator::ObjectAllocator(size_t ObjectSize, const OAConfig &config) : Pa
         size_t overhead = sizeof(void *) + HBlockSize + oaconfig.PadBytes_;
         if (overhead % oaconfig.Alignment_ != 0)
         {
-            oaconfig.LeftAlignSize_ = oaconfig.Alignment_ - (overhead % oaconfig.Alignment_);
+            oaconfig.LeftAlignSize_ = static_cast<unsigned>(oaconfig.Alignment_ - (overhead % oaconfig.Alignment_));
         }
 
         if (BlockSize % oaconfig.Alignment_ != 0)
         {
-            oaconfig.InterAlignSize_ = oaconfig.Alignment_ - (BlockSize % oaconfig.Alignment_);
+            oaconfig.InterAlignSize_ = static_cast<unsigned>(oaconfig.Alignment_ - (BlockSize % oaconfig.Alignment_));
         }
     }
 
@@ -132,11 +132,15 @@ void *ObjectAllocator::Allocate(const char *label)
         }
         else if (oaconfig.HBlockInfo_.type_ == OAConfig::hbExtended)
         {
-            unsigned *alloc_num = static_cast<unsigned *>(static_cast<void *>(header_ptr));
-            *alloc_num = oastats.Allocations_;
-            unsigned short *use_counter = static_cast<unsigned short *>(static_cast<void *>(header_ptr + sizeof(unsigned)));
+            size_t add_size = oaconfig.HBlockInfo_.additional_;
+
+            unsigned short *use_counter = static_cast<unsigned short *>(static_cast<void *>(header_ptr + add_size));
             (*use_counter)++;
-            char *flag = header_ptr + sizeof(unsigned) + sizeof(unsigned short);
+
+            unsigned *alloc_num = static_cast<unsigned *>(static_cast<void *>(header_ptr + add_size + sizeof(unsigned short)));
+            *alloc_num = oastats.Allocations_;
+
+            char *flag = header_ptr + add_size + sizeof(unsigned short) + sizeof(unsigned);
             *flag = 1;
         }
         else if (oaconfig.HBlockInfo_.type_ == OAConfig::hbExternal)
@@ -186,7 +190,7 @@ void ObjectAllocator::Free(void *Object)
             char *page_end = page_start + oastats.PageSize_;
             if (data_ptr > page_start && data_ptr < page_end)
             {
-                size_t offset = data_ptr - (page_start + sizeof(void *) + oaconfig.LeftAlignSize_ + oaconfig.HBlockInfo_.size_ + oaconfig.PadBytes_);
+                size_t offset = static_cast<size_t>(data_ptr - (page_start + sizeof(void *) + oaconfig.LeftAlignSize_ + oaconfig.HBlockInfo_.size_ + oaconfig.PadBytes_));
                 if (offset % (BlockSize + oaconfig.InterAlignSize_) == 0)
                 {
                     valid_boundary = true;
@@ -214,7 +218,7 @@ void ObjectAllocator::Free(void *Object)
         if (oaconfig.PadBytes_ > 0)
         {
             char *left_pad = data_ptr - oaconfig.PadBytes_;
-            char *right_pad = data_ptr - oastats.ObjectSize_;
+            char *right_pad = data_ptr + oastats.ObjectSize_;
             for (unsigned i = 0; i < oaconfig.PadBytes_; i++)
             {
                 if (static_cast<unsigned char>(left_pad[i]) != PAD_PATTERN || static_cast<unsigned char>(right_pad[i]) != PAD_PATTERN)
@@ -237,10 +241,13 @@ void ObjectAllocator::Free(void *Object)
         }
         else if (oaconfig.HBlockInfo_.type_ == OAConfig::hbExtended)
         {
-            char *flag = header_ptr + sizeof(unsigned) + sizeof(unsigned short);
+            size_t add_size = oaconfig.HBlockInfo_.additional_;
+
+            unsigned *alloc_num = static_cast<unsigned *>(static_cast<void *>(header_ptr + add_size + sizeof(unsigned short)));
+            *alloc_num = 0;
+
+            char *flag = header_ptr + add_size + sizeof(unsigned short) + sizeof(unsigned);
             *flag = 0;
-            unsigned *alloc_num = static_cast<unsigned *>(static_cast<void *>(header_ptr));
-            *alloc_num;
         }
         else if (oaconfig.HBlockInfo_.type_ == OAConfig::hbExternal)
         {
@@ -429,6 +436,11 @@ void ObjectAllocator::AllocateNewPage()
                 {
                     std::memset(block_ptr - oaconfig.InterAlignSize_, ALIGN_PATTERN, oaconfig.InterAlignSize_);
                 }
+            }
+
+            if (oaconfig.HBlockInfo_.type_ == OAConfig::hbBasic || oaconfig.HBlockInfo_.type_ == OAConfig::hbExtended)
+            {
+                std::memset(data_ptr - oaconfig.PadBytes_ - HBlockSize, 0, HBlockSize);
             }
 
             if (oaconfig.HBlockInfo_.type_ == OAConfig::hbExternal)
