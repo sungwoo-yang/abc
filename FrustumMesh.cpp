@@ -57,12 +57,14 @@ Vector FrustumMesh::Dimensions(void)
 
     for (int i = 1; i < 9; i++)
     {
-        min_x = std::min(min_x, vertices[i].x);
-        max_x = std::max(max_x, vertices[i].x);
-        min_y = std::min(min_y, vertices[i].y);
-        max_y = std::max(max_y, vertices[i].y);
-        min_z = std::min(min_z, vertices[i].z);
-        max_z = std::max(max_z, vertices[i].z);
+        min_x = (vertices[i].x < min_x) ? vertices[i].x : min_x;
+        max_x = (vertices[i].x > max_x) ? vertices[i].x : max_x;
+
+        min_y = (vertices[i].y < min_y) ? vertices[i].y : min_y;
+        max_y = (vertices[i].y > max_y) ? vertices[i].y : max_y;
+
+        min_z = (vertices[i].z < min_z) ? vertices[i].z : min_z;
+        max_z = (vertices[i].z > max_z) ? vertices[i].z : max_z;
     }
 
     return Vector(max_x - min_x, max_y - min_y, max_z - min_z);
@@ -79,12 +81,14 @@ Point FrustumMesh::Center(void)
 
     for (int i = 1; i < 9; i++)
     {
-        min_x = std::min(min_x, vertices[i].x);
-        max_x = std::max(max_x, vertices[i].x);
-        min_y = std::min(min_y, vertices[i].y);
-        max_y = std::max(max_y, vertices[i].y);
-        min_z = std::min(min_z, vertices[i].z);
-        max_z = std::max(max_z, vertices[i].z);
+        min_x = (vertices[i].x < min_x) ? vertices[i].x : min_x;
+        max_x = (vertices[i].x > max_x) ? vertices[i].x : max_x;
+
+        min_y = (vertices[i].y < min_y) ? vertices[i].y : min_y;
+        max_y = (vertices[i].y > max_y) ? vertices[i].y : max_y;
+
+        min_z = (vertices[i].z < min_z) ? vertices[i].z : min_z;
+        max_z = (vertices[i].z > max_z) ? vertices[i].z : max_z;
     }
 
     return Point((max_x + min_x) * 0.5f, (max_y + min_y) * 0.5f, (max_z + min_z) * 0.5f);

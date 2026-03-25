@@ -13,7 +13,7 @@ Camera::Camera(void)
     height = width;
 
     near = 0.1f;
-    far = 2.0f;
+    far = 10.0f;
 }
 
 Camera::Camera(const Point &E, const Vector &look, const Vector &rel,
