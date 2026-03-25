@@ -11,7 +11,7 @@
 class Camera {
   public:
     Camera(void);
-    Camera(const Point& E, const Vector& look, const Vector& vp,
+    Camera(const Point& E, const Vector& look, const Vector& rel,
            float fov, float aspect, float near, float far);
     Point Eye(void) const;
     Vector Right(void) const;
