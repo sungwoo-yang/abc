@@ -1,3 +1,8 @@
+// Name       : Sungwoo Yang
+// Assignment : Affine and Mesh Programming Assignment
+// Course     : CS250 Computer Graphics II
+// Term & Year: 2026 Spring
+
 #include "Affine.h"
 
 Hcoord::Hcoord(float X, float Y, float Z, float W) : x(X), y(Y), z(Z), w(W)
@@ -71,6 +76,7 @@ Matrix operator*(const Matrix &A, const Matrix &B)
     {
         for (int j = 0; j < 4; ++j)
         {
+            result[i][j] = 0.0f;
             for (int k = 0; k < 4; ++k)
             {
                 result[i][j] += A[i][k] * B[k][j];
@@ -164,7 +170,6 @@ Affine inverse(const Affine &A)
     Vector Inverse_Lz(Row0.z, Row1.z, Row2.z);
 
     Vector v(A[0][3], A[1][3], A[2][3]);
-
     Point D(-dot(Row0, v), -dot(Row1, v), -dot(Row2, v));
 
     return Affine(Inverse_Lx, Inverse_Ly, Inverse_Lz, D);
