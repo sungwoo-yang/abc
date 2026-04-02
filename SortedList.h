@@ -1,5 +1,5 @@
 /*!
-\file      SortedList.cpp
+\file      SortedList.h
 \par       CS280 Assignment 2
 \par       Course: CS280
 \copyright Copyright (C) 2026 DigiPen Institute of Technology
@@ -140,7 +140,13 @@ class SortedList
     bool shareAllocator_;           //!< Share it with copies?
     
     // Other private data and helper functions...
+    Pred sorter_;
 
+    template <typename Sorter>
+    Node* merge(Node* a, Node* b, Sorter fn);
+
+    template <typename Sorter>
+    Node* merge_sort_recursive(Node* h, Sorter fn);
 };
 
 #include "SortedList.cpp"

@@ -13,12 +13,12 @@ ObjectAllocator::ObjectAllocator(size_t ObjectSize, const OAConfig &config) : Pa
         size_t overhead = sizeof(void *) + HBlockSize + oaconfig.PadBytes_;
         if (overhead % oaconfig.Alignment_ != 0)
         {
-            oaconfig.LeftAlignSize_ = oaconfig.Alignment_ - (overhead % oaconfig.Alignment_);
+            oaconfig.LeftAlignSize_ = static_cast<unsigned>(oaconfig.Alignment_ - (overhead % oaconfig.Alignment_));
         }
 
         if (BlockSize % oaconfig.Alignment_ != 0)
         {
-            oaconfig.InterAlignSize_ = oaconfig.Alignment_ - (BlockSize % oaconfig.Alignment_);
+            oaconfig.InterAlignSize_ = static_cast<unsigned>(oaconfig.Alignment_ - (BlockSize % oaconfig.Alignment_));
         }
     }
 
@@ -240,7 +240,7 @@ void ObjectAllocator::Free(void *Object)
             char *flag = header_ptr + sizeof(unsigned) + sizeof(unsigned short);
             *flag = 0;
             unsigned *alloc_num = static_cast<unsigned *>(static_cast<void *>(header_ptr));
-            *alloc_num;
+            *alloc_num = 0;
         }
         else if (oaconfig.HBlockInfo_.type_ == OAConfig::hbExternal)
         {
