@@ -96,7 +96,7 @@ typename BSTree<T>::BinTree BSTree<T>::copy_tree(const BinTree tree)
 /*!
  * \brief Subscript operator to retrieve the node at the specified index.
  * \param index The 0-based index of the node to find.
- * \return Pointer to the found node or nullptr.
+ * \return Pointer to the found node.
  */
 template <typename T>
 const typename BSTree<T>::BinTreeNode *BSTree<T>::operator[](int index) const
@@ -106,19 +106,20 @@ const typename BSTree<T>::BinTreeNode *BSTree<T>::operator[](int index) const
 
     while (current)
     {
-        int left_subtree_count = current->left ? static_cast<int>(current->left->count) : 0;
+        int left_count = current->left ? static_cast<int>(current->left->count) : 0;
 
-        if (curr_idx == left_subtree_count)
+        if (curr_idx == left_count)
         {
             return current;
         }
-        if (curr_idx < left_subtree_count)
+
+        if (curr_idx < left_count)
         {
             current = current->left;
         }
         else
         {
-            curr_idx -= (left_subtree_count + 1);
+            curr_idx -= (left_count + 1);
             current = current->right;
         }
     }
@@ -324,12 +325,12 @@ typename BSTree<T>::BinTree BSTree<T>::root() const
 
 /*!
  * \brief Indicates whether indexing is implemented.
- * \return True for this implementation.
+ * \return True to enable Extra Credit outputs [count].
  */
 template <typename T>
 bool BSTree<T>::ImplementedIndexing()
 {
-    return false;
+    return true;
 }
 
 /*!
